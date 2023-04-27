@@ -94,4 +94,16 @@
 specifications:
 - make a complete UI covering all features
 - make a complete backend covering all features
-- 
+- UI is up for our interpretation
+- design:
+    - attractive landing page
+    - strong call to action
+    - navbar with links like homepage, register, login, my account, cart, etc
+    - landing page should have buttons for some product categories
+    - attractive footer
+    - header and footer should be same on all pages preferably
+    - color scheme
+    - css special effects - animation/hover/transitions/scale
+- security:
+    - authentication/authorization
+    - hashing/salt/etc
