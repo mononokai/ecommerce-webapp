@@ -91,20 +91,3 @@
 	- Vendors can see all of their received orders
 
 
-
-Specifications:
-- Make a complete UI covering all features
-- Make a complete backend covering all features
-- UI is up for our interpretation
-- Design:
-	- Attractive landing page
-	- Strong call to action
-	- Navbar with links like homepage, register, login, my account, cart, etc
-	- Landing page should have buttons for some product categories
-	- Attractive footer
-	- Header and footer should be same on all pages preferably
-	- Color scheme
-	- CSS special effects - animation/hover/transitions/scale
-- Security:
-	- Authentication/authorization
-	- Hashing/salt/etc
