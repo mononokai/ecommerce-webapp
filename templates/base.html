@@ -8,57 +8,30 @@
     <title>{% block title %} {% endblock %}</title>
 </head>
 <body>
-    <nav>
-        
-        <div class="logo">
-            <h4>Examagram</h4>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+
+            </ul>
         </div>
-
-        <ul class="nav-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/all_exams/">Exams</a></li>
-            <li><a href="/create_exam/">Create Exam</a></li>
-            <li><a href="/edit_exam/">Edit Exam</a></li>
-            <li><a href="/delete_exam/">Delete Exam</a></li>
-            <li><a href="/all_accounts/">Accounts</a></li>
-            <li><a href="/register/">Register</a></li>
-        </ul>
-
+        </div>
     </nav>
 
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for msg in messages %}
-                <p>{{ msg }}</p>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    <main>
+    <main class="container">
         {% block content %}
     
         {% endblock %}
     </main>
 
-    <footer>
-        <div class="footer-content">
+    <footer class="text-center">
+        {% block footer %}
 
-            <h3>Examagram</h3>
-            <p>Examagram is a web app that helps instructors provide exams remotely!</p>
-
-            <ul class="socials">
-                <li><a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111499.png" height=30/></a></li>
-                <li><a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" height=30/></a></li>
-                <li><a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111425.png" height=30/></a></li>
-                <li><a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111688.png" height=30/></a></li>
-            </ul>
-
-        </div>
-
-        <div class="footer-copyright">
-            &copy; Examagram 2023
-        </div>
-
+        {% endblock %}
     </footer>
 
 </body>
