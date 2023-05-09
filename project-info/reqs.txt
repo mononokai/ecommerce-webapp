@@ -39,7 +39,7 @@
 		- Vendor
 	- Products can be filtered:
 		- Category
-	- Color:
+		- Color  
 		- Size
 		- Availability
 - Cart:
