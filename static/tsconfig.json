@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "commonjs",
+        "strict": true,
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+    },
+    "files": [
+        "app.ts",
+    ]
+}
