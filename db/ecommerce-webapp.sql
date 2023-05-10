@@ -1,7 +1,8 @@
+-- Active: 1683724321566@@127.0.0.1@3306
 
-create database ecommerce;
+create database ecommerce_webapp;
 
-use ecommerce;
+use ecommerce_webapp;
 
 # building out the tables
 create table
@@ -22,15 +23,6 @@ create table
     );
 
 create table
-    vendor_product (
-        vendor_item_id int auto_increment primary key,
-        user_id int not null,
-        product_id int not null,
-        constraint vend_prod_user_fk foreign key (user_id) references user(user_id),
-        constraint vend_prod_prod_fk foreign key (product_id) references product(product_id)
-    );
-
-create table
     product (
         product_id int auto_increment not null primary key,
         product_name varchar(255) not null,
@@ -46,33 +38,20 @@ create table
     );
 
 create table
+    vendor_product (
+        vendor_item_id int auto_increment primary key,
+        user_id int not null,
+        product_id int not null,
+        constraint vend_prod_user_fk foreign key (user_id) references user(user_id),
+        constraint vend_prod_prod_fk foreign key (product_id) references product(product_id)
+    );
+
+create table
     cart (
         cart_id int auto_increment primary key,
         user_id int not null,
         total_price dec(10,2) not null default 0.00,
         constraint cart_user_fk foreign key (user_id) references user(user_id)
-    );
-
-create table
-    cart_item (
-        cart_item_id int auto_increment primary key,
-        cart_id int not null,
-        product_variant_id int not null,
-        quantity int not null default 1,
-        price dec(10,2) not null,
-        constraint cart_item_cart_fk foreign key (cart_id) references cart(cart_id),
-        constraint cart_item_prod_var_fk foreign key (product_variant_id) references product_variant(product_variant_id)
-    );
-
-create table
-    product_variant (
-        product_variant_id int auto_increment primary key,
-        product_id int not null,
-        color_id int not null,
-        size_id int null,
-        constraint prod_var_prod_fk foreign key (product_id) references product(product_id),
-        constraint prod_var_color_fk foreign key (color_id) references color(color_id),
-        constraint prod_var_size_fk foreign key (size_id) references size(size_id)
     );
 
 create table
@@ -86,6 +65,30 @@ create table
         size_id int auto_increment primary key,
         size_name varchar(30) not null unique
     );
+
+create table
+    product_variant (
+        product_variant_id int auto_increment primary key,
+        product_id int not null,
+        color_id int not null,
+        size_id int null,
+        constraint prod_var_prod_fk foreign key (product_id) references product(product_id),
+        constraint prod_var_color_fk foreign key (color_id) references color(color_id),
+        constraint prod_var_size_fk foreign key (size_id) references size(size_id)
+    );
+    
+create table
+    cart_item (
+        cart_item_id int auto_increment primary key,
+        cart_id int not null,
+        product_variant_id int not null,
+        quantity int not null default 1,
+        price dec(10,2) not null,
+        constraint cart_item_cart_fk foreign key (cart_id) references cart(cart_id),
+        constraint cart_item_prod_var_fk foreign key (product_variant_id) references product_variant(product_variant_id)
+    );
+
+
 
 create table
     orders (

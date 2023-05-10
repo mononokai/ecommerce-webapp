@@ -1,36 +1,33 @@
 from flask import Flask, session, render_template, redirect, url_for, request, flash
 from sqlalchemy import create_engine, text
-from general import general
-from admin import admin
-from auth import auth
-from cart import cart
-from products import products
-from vendor import vendor
-from user import user
+import mysql.connector
+from general.general import general_bp
+from admin.admin import admin_bp
+from auth.auth import auth_bp
+from cart.cart import cart_bp
+from products.products import products_bp
+from vendor.vendor import vendor_bp
+from user.user import user_bp
 
 
 app = Flask(__name__)
-app.register_blueprint(general)
-app.register_blueprint(admin, url_prefix="admin")
-app.register_blueprint(auth, url_prefix="auth")
-app.register_blueprint(cart, url_prefix="cart")
-app.register_blueprint(products, url_prefix="products")
-app.register_blueprint(vendor, url_prefix="vendor")
-app.register_blueprint(user, url_prefix="user")
+app.register_blueprint(general_bp)
+app.register_blueprint(admin_bp, url_prefix="/admin")
+app.register_blueprint(auth_bp, url_prefix="/auth")
+app.register_blueprint(cart_bp, url_prefix="/cart")
+app.register_blueprint(products_bp, url_prefix="/products")
+app.register_blueprint(vendor_bp, url_prefix="/vendor")
+app.register_blueprint(user_bp, url_prefix="/user")
 
 app.secret_key = "secret"
-engine = create_engine("mysql://david@localhost/ecommerce_webapp")
-connection = engine.connect()
+conn = mysql.connector.connect(user="david", database="ecommerce_webapp")
 
 
 def check_session():
     return 'username' in session 
 
 
-@app.route('/')
-@app.route('/home/')
-def home():
-    return render_template('home.html')
+
 
 
 if __name__ == '__main__':

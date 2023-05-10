@@ -1,3 +1,3 @@
 from flask import Blueprint, render_template
 
-admin = Blueprint("admin", __name__, static_folder="static", template_folder="template")
+admin_bp = Blueprint("admin_bp", __name__, static_folder="static", template_folder="template")
