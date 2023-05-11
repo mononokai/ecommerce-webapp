@@ -6,7 +6,7 @@ user_bp = Blueprint("user_bp", __name__, static_folder="static", template_folder
 
 
 @user_bp.route('account_overview/')
-def discover():
+def account_overview():
     return render_template('user/account_overview.html')
 
 
