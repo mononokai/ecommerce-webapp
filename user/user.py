@@ -1,4 +1,6 @@
 from flask import Blueprint, render_template
+from db.db import conn
+
 
 user_bp = Blueprint("user_bp", __name__, static_folder="static", template_folder="templates")
 
@@ -10,7 +12,12 @@ def discover():
 
 @user_bp.route('chat/')
 def chat():
-    return render_template('user/chat.html')
+    # return render_template('user/chat.html')
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM role;")
+    result = cursor.fetchone()[0]
+    cursor.close()
+    return f"Number of roles: {result}"
 
 
 @user_bp.route('chat/<chat_id>/')

@@ -1,4 +1,4 @@
--- Active: 1683292094538@@127.0.0.1@3306
+-- Active: 1683292094538@@127.0.0.1@3306@ecommerce_webapp
 
 create database ecommerce_webapp;
 
@@ -17,6 +17,8 @@ create table
         role_id int not null,
         email varchar(100) not null unique,
         username varchar(50) not null unique,
+        first_name varchar(50) not null,
+        last_name varchar(50) not null,
         name varchar(80) not null,
         password varchar(60) not null,
         constraint user_role_fk foreign key (role_id) references role(role_id)
@@ -168,3 +170,12 @@ create table
         constraint dispute_type_check check (dispute_type in ('return', 'refund', 'exchange', 'warranty')),
         constraint dispute_status_check check (dispute_status in ('pending', 'rejected', 'confirmed', 'processing', 'complete'))
     );
+
+
+
+
+
+
+-- Filler data
+
+insert into role (role_name) values ('customer'), ('vendor'), ('admin');

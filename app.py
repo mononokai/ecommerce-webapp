@@ -1,6 +1,5 @@
 from flask import Flask, session, render_template, redirect, url_for, request, flash
-from sqlalchemy import create_engine, text
-import mysql.connector
+from db.db import conn
 from general.general import general_bp
 from admin.admin import admin_bp
 from auth.auth import auth_bp
@@ -20,11 +19,18 @@ app.register_blueprint(vendor_bp, url_prefix="/vendor")
 app.register_blueprint(user_bp, url_prefix="/user")
 
 app.secret_key = "secret"
-conn = mysql.connector.connect(user="david", database="ecommerce_webapp")
 
 
-def check_session():
-    return 'username' in session 
+
+
+# DB test
+@app.route('/db_test/')
+def db_test():
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM role;")
+    result = cursor.fetchone()[0]
+    cursor.close()
+    return f"Number of roles: {result}"
 
 
 

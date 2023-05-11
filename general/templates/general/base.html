@@ -16,12 +16,12 @@
         <div class="nav-links">
             <a href="{{ url_for('general_bp.home') }}">Home</a>
             <a href="{{ url_for('products_bp.discover') }}">Discover</a>
-            {% if !session.logged_in %}
-                <a href="{{ url_for('auth.login') }}">Login</a>
-                <a href="{{ url_for('auth.register') }}">Register</a>
+            {% if session.logged_in %}
+            <a href="{{ url_for('user_bp.account_overview')}}">Account</a>
+            <a href="#">Logout</a> <!-- TODO: logout function-->
             {% else %}
-                <a href="{{ url_for('user.account_overview')}}">Account</a>
-                <a href="#">Logout</a> <!-- TODO: logout function-->
+            <a href="{{ url_for('auth_bp.login') }}">Login</a>
+            <a href="{{ url_for('auth_bp.register') }}">Register</a>
             {% endif %}
         </div>
     </div>
