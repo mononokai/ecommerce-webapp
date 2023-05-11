@@ -5,8 +5,8 @@ from db.db import conn
 user_bp = Blueprint("user_bp", __name__, static_folder="static", template_folder="templates")
 
 
-@user_bp.route('account_overview/')
-def account_overview():
+@user_bp.route('account_overview/<username>/')
+def account_overview(username):
     if 'username' not in session:
         flash("You must be logged in to view your profile")
         return redirect(url_for('auth_bp.login'))
@@ -16,7 +16,7 @@ def account_overview():
         cursor.execute("SELECT * FROM user WHERE username = %s;", (username,))
         user_info = cursor.fetchone()
         cursor.close()
-        print(user_info)
+        print(session["username"])
         return render_template('user/account_overview.html', user_info=user_info)
 
 

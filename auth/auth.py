@@ -69,11 +69,6 @@ def check_email(email):
         return False
     
 
-# Check if user in session
-def check_session():
-    return 'username' in session 
-
-
 @auth_bp.route("login/", methods=["GET", "POST"])
 def login():
     email = None
@@ -81,10 +76,10 @@ def login():
     remember = False
     form = LoginForm()
 
-    if check_session():
-        flash("You are already logged in", "danger")
+    if "username" in session:
+        flash("You are already logged in", "error")
+        print(session) # TODO: Remove
         return redirect(url_for("general_bp.home"))
-
     elif request.method == "POST":        
         if form.validate_on_submit():
             email = form.email.data
@@ -100,22 +95,26 @@ def login():
                     session["email"] = result[2]
                     session["role_id"] = result[1]
                     flash("You are now logged in", "success")
+                    print(session) # TODO: Remove
                     return redirect(url_for("general_bp.home"))
                 else:
-                    flash("Incorrect password", "danger")
+                    flash("Incorrect password", "error")
+                    print(session) # TODO: Remove
                     return redirect(url_for("auth_bp.login"))
             else:
-                flash("Email not found", "danger")
+                flash("Email not found", "error")
+                print(session) # TODO: Remove
                 return redirect(url_for("auth_bp.login"))
         else:
-            flash("Please fill out the form correctly", "danger")
+            flash("Please fill out the form correctly", "error")
+            print(session) # TODO: Remove
             return redirect("auth/login.html")
 
-    # TODO: Add login functionality
-
-    return render_template(
-        "auth/login.html", form=form, email=email, password=password, remember=remember
-    )
+    else:
+        print(session) # TODO: Remove
+        return render_template(
+            "auth/login.html", form=form, email=email, password=password, remember=remember
+        )
 
 
 @auth_bp.route("register/", methods=["GET", "POST"])

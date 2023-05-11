@@ -4,16 +4,18 @@
 {% block title %}Account Overview - Note Worthy{% endblock %}
 
 
-{% block content %}
+{% block content %} <!-- ? should this be in a block   -->
 
 <div class="container">
     <h1>account overview</h1>
+
     <div class="user-info">
-        <h2>{{ user_info.first_name.title() }}'s Info:</h2>
-        <p><b>Username:</b> {{ user_info.username }}</p>
-        <p><b>Name:</b> {{ user_info.first_name.title() }} {{ user_info.last_name.title() }}</p>
-        <p><b>Email:</b> {{ user_info.email }}</p>
+        <h2>{{ user_info[5].title() }}'s Info:</h2>
+        <p><b>Username:</b> {{ user_info[3] }}</p>
+        <p><b>Name:</b> {{ user_info[5].title() }} {{ user_info[6].title() }}</p>
+        <p><b>Email:</b> {{ user_info[2] }}</p>
     </div>
+
     <div class="user-links">
         <a href="{{ url_for('user_bp.chat') }}">chat</a>
         <a href="{{ url_for('user_bp.order_history') }}">order history</a>
