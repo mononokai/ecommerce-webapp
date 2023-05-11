@@ -18,6 +18,7 @@ app.register_blueprint(products_bp, url_prefix="/products")
 app.register_blueprint(vendor_bp, url_prefix="/vendor")
 app.register_blueprint(user_bp, url_prefix="/user")
 
+
 app.secret_key = "secret"
 
 

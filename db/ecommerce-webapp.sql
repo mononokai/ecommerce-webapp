@@ -1,4 +1,4 @@
--- Active: 1683292094538@@127.0.0.1@3306@ecommerce_webapp
+-- Active: 1683724321566@@127.0.0.1@3306@ecommerce_webapp
 
 create database ecommerce_webapp;
 
@@ -19,7 +19,6 @@ create table
         username varchar(50) not null unique,
         first_name varchar(50) not null,
         last_name varchar(50) not null,
-        name varchar(80) not null,
         password varchar(60) not null,
         constraint user_role_fk foreign key (role_id) references role(role_id)
     );
@@ -172,10 +171,7 @@ create table
     );
 
 
-
-
-
-
 -- Filler data
 
 insert into role (role_name) values ('customer'), ('vendor'), ('admin');
+
