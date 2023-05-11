@@ -4,7 +4,7 @@
 	- Username
 	- Password
 - Login:
-	- Username OR Email
+	- Email
 	- Password
 - User Types:
 	- Admin
