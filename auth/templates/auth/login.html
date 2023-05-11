@@ -7,7 +7,23 @@
 {% block content %}
 
 <div class="container">
-    <h1>login</h1>
+    <h1 class='section-heading'>Login</h1>
+
+    <form action="#" method="post">
+        {{ form.hidden_tag() }}
+
+        {{ form.email.label }}
+        {{ form.email() }}
+
+        {{ form.password.label }}
+        {{ form.password() }}
+
+        {{ form.remember.label }}
+        {{ form.remember() }}
+
+        {{ form.submit() }}
+
+    </form>
 </div>
 
 {% endblock  %}

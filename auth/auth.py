@@ -20,6 +20,7 @@ class RegisterForm(FlaskForm):
     first_name = StringField('First Name', validators=[DataRequired(), Length(min=2, max=20)])
     last_name = StringField('Last Name', validators=[DataRequired(), Length(min=2, max=30)])
     email = StringField('Email', validators=[DataRequired(), Email()])
+    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=30)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     vendor = SelectField('Are you a vendor?', choices=[('yes', 'Yes'), ('no', 'No')])
@@ -28,9 +29,65 @@ class RegisterForm(FlaskForm):
 
 @auth_bp.route('login/', methods=['GET', 'POST'])
 def login():
-    return render_template('auth/login.html')
+    email = None
+    password = None
+    remember = False
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+        remember = form.remember.data
+        form.email.data = ''
+        form.password.data = ''
+        form.remember.data = False
+
+# TODO: Add login functionality
+
+    return render_template('auth/login.html', form=form, email=email, password=password, remember=remember)
 
 
 @auth_bp.route('register/')
 def register():
-    return render_template('auth/register.html')
+    first_name = None
+    last_name = None
+    email = None
+    username = None
+    password = None
+    confirm_password = None
+    vendor = None
+    form = RegisterForm()
+
+    if form.validate_on_submit():
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+        email = form.email.data
+        username = form.username.data
+        password = form.password.data
+        confirm_password = form.confirm_password.data
+        vendor = form.vendor.data
+        form.first_name.data = ''
+        form.last_name.data = ''
+        form.email.data = ''
+        form.username.data = ''
+        form.password.data = ''
+        form.confirm_password.data = ''
+        form.vendor.data = ''
+
+# TODO: Add register functionality
+
+    return render_template('auth/register.html',
+                            form=form,
+                            first_name=first_name,
+                            last_name=last_name,
+                            email=email,
+                            username=username,
+                            password=password,
+                            confirm_password=confirm_password,
+                            vendor=vendor)
+
+
+@auth_bp.route('logout/')
+def logout():
+    session.clear()
+    return redirect(url_for('general_bp.home'))
