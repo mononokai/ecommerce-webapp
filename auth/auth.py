@@ -7,7 +7,26 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationE
 auth_bp = Blueprint("auth_bp", __name__, static_folder="static", template_folder="templates")
 
 
-@auth_bp.route('login/')
+# Register Form Class
+# Login Form Class
+class LoginForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
+    remember = BooleanField('Remember Me')
+    submit = SubmitField('Login')
+
+
+class RegisterForm(FlaskForm):
+    first_name = StringField('First Name', validators=[DataRequired(), Length(min=2, max=20)])
+    last_name = StringField('Last Name', validators=[DataRequired(), Length(min=2, max=30)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    vendor = SelectField('Are you a vendor?', choices=[('yes', 'Yes'), ('no', 'No')])
+    submit = SubmitField('Sign Up')
+
+
+@auth_bp.route('login/', methods=['GET', 'POST'])
 def login():
     return render_template('auth/login.html')
 
