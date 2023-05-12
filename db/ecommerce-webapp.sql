@@ -1,4 +1,4 @@
--- Active: 1683724321566@@127.0.0.1@3306@ecommerce_webapp
+-- Active: 1683292094538@@127.0.0.1@3306@ecommerce_webapp
 
 create database ecommerce_webapp;
 
@@ -35,7 +35,9 @@ create table
         product_price dec(10,2) not null,
         discount_percentage dec(2,2),
         discount_start_date date,
-        discount_end_date date
+        discount_end_date date,
+        rating int not null check (rating between 1 and 5),
+        category varchar(30) not null
     );
 
 create table
@@ -175,3 +177,6 @@ create table
 
 insert into role (role_name) values ('customer'), ('vendor'), ('admin');
 
+-- delete these after adding to laptop db
+alter table product add column rating int not null check (rating between 1 and 5);
+alter table product add column category varchar(30) not null;
