@@ -29,14 +29,13 @@ create table
         product_name varchar(255) not null,
         product_description text(10000),
         product_images text(10000),
-        in_stock boolean not null,
         stock_amount int default 1,
-        warranty_period int,
         product_price dec(10,2) not null,
         discount_percentage dec(2,2),
         discount_start_date date,
         discount_end_date date,
-        rating int not null check (rating between 1 and 5),
+        rating int not null default 0 check (rating between 0 and 5),
+        rating_count int not null default 0,
         category varchar(30) not null
     );
 
@@ -127,7 +126,7 @@ create table
         rating int not null,
         constraint review_user_fk foreign key (user_id) references user(user_id),
         constraint review_prod_fk foreign key (product_id) references product(product_id),
-        constraint check_rating check (rating between 1 and 5)
+        constraint check_rating check (rating between 0 and 5)
     );
 
 create table
@@ -177,6 +176,9 @@ create table
 
 insert into role (role_name) values ('customer'), ('vendor'), ('admin');
 
--- delete these after adding to laptop db
-alter table product add column rating int not null check (rating between 1 and 5);
-alter table product add column category varchar(30) not null;
+-- display all check constraints
+select * from information_schema.check_constraints;
+
+alter table review drop check check_rating, add check ('rating' between 0 and 5);
+
+alter table product drop check product_chk_1;

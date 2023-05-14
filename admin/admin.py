@@ -1,11 +1,12 @@
 from flask import Blueprint, render_template
 from db.db import conn
 
-admin_bp = Blueprint("admin_bp", __name__, static_folder="static", template_folder="template")
+admin_bp = Blueprint("admin_bp", __name__, static_folder="static", template_folder="templates")
 
 
 @admin_bp.route('product_overview/')
-def delete_product():
+def product_overview():
+    print('do this work')
     return render_template('admin/product_overview.html')
 
 

@@ -35,7 +35,7 @@ def chat_view(chat_id):
     return render_template('user/chat_view.html')
 
 
-@user_bp.route('complaint')
+@user_bp.route('complaint/')
 def complaint():
     return render_template('user/complaint.html')
 

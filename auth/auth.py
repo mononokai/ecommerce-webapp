@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, session, flash, request
-from db.db import conn
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
 from flask_wtf import FlaskForm
 from wtforms import (
     StringField,
@@ -10,7 +10,10 @@ from wtforms import (
     SelectField,
     TextAreaField,
 )
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms.validators import DataRequired, Length, Email, EqualTo
+from flask_wtf.csrf import generate_csrf
+
+from db.db import conn
 
 auth_bp = Blueprint(
     "auth_bp", __name__, static_folder="static", template_folder="templates"
@@ -20,7 +23,8 @@ auth_bp = Blueprint(
 # Login Form Class
 class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
-    password = PasswordField("Password", validators=[DataRequired(), Length(min=8)])
+    password = PasswordField("Password", validators=[DataRequired(), Length(min=4),]) # Length(min=8)
+                            # TODO add the length validator back in
     remember = BooleanField("Remember Me")
     submit = SubmitField("Login")
 
@@ -50,6 +54,7 @@ def check_username(username):
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM user WHERE username = %s;", (username,))
     result = cursor.fetchone()
+    conn.nextset()
     cursor.close()
     if result:
         return True
@@ -62,6 +67,7 @@ def check_email(email):
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM user WHERE email = %s;", (email,))
     result = cursor.fetchone()
+    conn.nextset()
     cursor.close()
     if result:
         return True
@@ -75,13 +81,17 @@ def login():
     password = None
     remember = False
     form = LoginForm()
-
+    form.csrf_token.data = generate_csrf()
+    
     if "username" in session:
+        print('login session exists')
         flash("You are already logged in", "error")
         print(session) # TODO: Remove
+        print('test1')
         return redirect(url_for("general_bp.home"))
     elif request.method == "POST":        
-        if form.validate_on_submit():
+        if form.validate_on_submit(): 
+        #  TODO add this back in
             email = form.email.data
             password = form.password.data
             remember = form.remember.data
@@ -94,24 +104,35 @@ def login():
                     session["username"] = result[3]
                     session["email"] = result[2]
                     session["role_id"] = result[1]
+                    session["csrf_token"] = form.csrf_token.data
+                    session["user_id"] = result[0]
+                    print('login password correct')
                     flash("You are now logged in", "success")
                     print(session) # TODO: Remove
+                    print('test2')
                     return redirect(url_for("general_bp.home"))
                 else:
                     flash("Incorrect password", "error")
                     print(session) # TODO: Remove
+                    print('test3')
                     return redirect(url_for("auth_bp.login"))
             else:
                 flash("Email not found", "error")
                 print(session) # TODO: Remove
+                print('test4')
                 return redirect(url_for("auth_bp.login"))
         else:
             flash("Please fill out the form correctly", "error")
             print(session) # TODO: Remove
+            print('test5')
+            print(form.errors)
             return redirect("auth/login.html")
 
     else:
+        session.clear() # ? Potential fix to the session issue ???
         print(session) # TODO: Remove
+        print('test6')
+        print('login no session')
         return render_template(
             "auth/login.html", form=form, email=email, password=password, remember=remember
         )
@@ -155,6 +176,8 @@ def register():
                 session["username"] = username
                 session["email"] = email
                 session["role_id"] = role_id
+                print('register validation')
+                
 
 
                 flash("Account created successfully", "success")
@@ -167,6 +190,9 @@ def register():
                 form.role.data = ""
                 cursor.execute("INSERT INTO user (role_id, email, username, password, first_name, last_name) VALUES (%s, %s, %s, %s, %s, %s);", (role_id, email, username, password, first_name, last_name))
                 conn.commit()
+                cursor.execute("SELECT user_id FROM user WHERE username = %s;", (username,))
+                print('register validation 2')
+                session["user_id"] = cursor.fetchone()[0]
                 cursor.close()
                 return redirect(url_for("products_bp.discover"))
         else:
@@ -188,5 +214,6 @@ def register():
 
 @auth_bp.route("logout/")
 def logout():
+    print('logout')
     session.clear()
     return redirect(url_for("general_bp.home"))

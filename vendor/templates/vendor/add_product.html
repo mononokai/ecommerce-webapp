@@ -7,7 +7,40 @@
 {% block content %}
 
 <div class="container">
-    <h1></h1>
+    <h1>Enter Product Details</h1>
+    
+    <form action="#" method="post">
+        {{ form.hidden_tag }}
+
+        {{ form.product_name.label }}
+        {{ form.product_name }}
+
+        {{ form.product_description.label }}
+        {{ form.product_description(rows=10) }}
+
+        {{ form.product_image.label }}
+        {{ form.product_image }}
+
+        {{ form.product_price.label }}
+        {{ form.product_price }}
+
+        {{ form.stock_amount.label }}
+        {{ form.stock_amount }}
+
+        {{ form.category.label }}
+        {{ form.category }}
+        
+        {{ form.discount_percentage.label }}
+        {{ form.discount_percentage }}
+        
+        {{ form.discount_start_date.label }}
+        {{ form.discount_start_date }}
+
+        {{ form.discount_end_date.label }}
+        {{ form.discount_end_date }}
+
+        {{ form.submit }}
+    </form>
 </div>
 
 {% endblock  %}

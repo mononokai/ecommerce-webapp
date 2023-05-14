@@ -1,13 +1,14 @@
 {% extends 'general/base.html' %}
 
 
-{% block title %}Add Product (Vendor) - Note Worthy{% endblock %}
+{% block title %}Product Overview (Vendor) - Note Worthy{% endblock %}
 
 
 {% block content %}
 
 <div class="container">
     <h1>Product Overview</h1>
+    
     <div class="product-overview-links">
         <a href="{{ url_for('vendor_bp.add_product') }}">add product</a>
         <!-- search -->
@@ -24,6 +25,7 @@
             </select>
             <button type="submit">Filter</button>
     </div>
+
     <div class="product-container">
         <div class="product-card">
             {% if products == [] %}
