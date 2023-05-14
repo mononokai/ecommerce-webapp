@@ -10,12 +10,6 @@
     <h1>Product Overview</h1>
     
     <div class="product-overview-links">
-        <a href="{{ url_for('vendor_bp.add_product') }}">add product</a>
-        <!-- search -->
-        <form action="{{ url_for('vendor_bp.product_overview') }}" method="POST">
-            <input type="text" name="search" placeholder="Search">
-            <button type="submit">Search</button>
-        </form>
         <!-- filter -->
         <form action="{{ url_for('vendor_bp.product_overview') }}" method="POST">
             <select name="filter">
@@ -24,6 +18,13 @@
                 <option value="rating">Rating</option>
             </select>
             <button type="submit">Filter</button>
+        </form>
+        <!-- search -->
+        <form action="{{ url_for('vendor_bp.product_overview') }}" method="POST">
+            <input type="text" name="search" placeholder="Search">
+            <button type="submit">Search</button>
+        </form>
+        <a href="{{ url_for('vendor_bp.add_product') }}">add product</a>
     </div>
 
     <div class="product-container">

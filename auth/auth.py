@@ -168,46 +168,38 @@ def register():
 
             if check_username(username):
                 flash("Username already exists", "error")
+                cursor.close()
                 return redirect(url_for("auth_bp.register"))
             elif check_email(email):
                 flash("Email already exists", "error")
+                cursor.close()
                 return redirect(url_for("auth_bp.register"))
             else:
-                session["username"] = username
-                session["email"] = email
-                session["role_id"] = role_id
-                print('register validation')
-                
-
-
-                flash("Account created successfully", "success")
-                form.first_name.data = ""
-                form.last_name.data = ""
-                form.email.data = ""
-                form.username.data = ""
-                form.password.data = ""
-                form.confirm_password.data = ""
-                form.role.data = ""
                 cursor.execute("INSERT INTO user (role_id, email, username, password, first_name, last_name) VALUES (%s, %s, %s, %s, %s, %s);", (role_id, email, username, password, first_name, last_name))
                 conn.commit()
                 cursor.execute("SELECT user_id FROM user WHERE username = %s;", (username,))
-                print('register validation 2')
+
+                session["username"] = username
+                session["email"] = email
+                session["role_id"] = role_id
                 session["user_id"] = cursor.fetchone()[0]
                 cursor.close()
+
+                flash("Account created successfully", "success")
                 return redirect(url_for("products_bp.discover"))
         else:
             flash("Please fill out all fields", "error")
             return render_template(
-        "auth/register.html",
-        form=form,
-        first_name=first_name,
-        last_name=last_name,
-        email=email,
-        username=username,
-        password=password,
-        confirm_password=confirm_password,
-        role=role,
-        )
+            "auth/register.html",
+            form=form,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            username=username,
+            password=password,
+            confirm_password=confirm_password,
+            role=role,
+            )
     else:
         return render_template("auth/register.html", form=form)
 
