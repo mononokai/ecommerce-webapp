@@ -40,3 +40,17 @@ form > label,
 form > input[type='submit'] {
     margin: 10px 0;
 }
+
+
+/* ----- Products ------ */
+
+.product-overview-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px 0;
+    padding: 0 15px;
+    gap: 5%;
+}
