@@ -12,32 +12,29 @@
     <form action="#" method="post">
         {{ form.hidden_tag }}
 
-        {{ form.product_name.label }}
-        {{ form.product_name }}
+        {{ form.name.label }}
+        {{ form.name }}
 
-        {{ form.product_description.label }}
-        {{ form.product_description(rows=10) }}
+        {{ form.description.label }}
+        {{ form.description(rows=10) }}
 
-        {{ form.product_image.label }}
-        {{ form.product_image }}
+        {{ form.img_url.label }}
+        {{ form.img_url }}
 
-        {{ form.product_price.label }}
-        {{ form.product_price }}
+        {{ form.price.label }}
+        {{ form.price }}
 
-        {{ form.stock_amount.label }}
-        {{ form.stock_amount }}
+        {{ form.inventory.label }}
+        {{ form.inventory }}
 
         {{ form.category.label }}
         {{ form.category }}
         
-        {{ form.discount_percentage.label }}
-        {{ form.discount_percentage }}
-        
-        {{ form.discount_start_date.label }}
-        {{ form.discount_start_date }}
+        {{ form.disc_price.label }}
+        {{ form.disc_price }}
 
-        {{ form.discount_end_date.label }}
-        {{ form.discount_end_date }}
+        {{ form.disc_end_date.label }}
+        {{ form.disc_end_date }}
 
         {{ form.submit }}
     </form>

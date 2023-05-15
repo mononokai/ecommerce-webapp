@@ -1,4 +1,4 @@
--- Active: 1683292094538@@127.0.0.1@3306@ecommerce_webapp
+-- Active: 1683724321566@@127.0.0.1@3306
 
 create database ecommerce_webapp;
 
@@ -6,10 +6,9 @@ use ecommerce_webapp;
 
 CREATE TABLE
     `role` (
-        `role_id` int NOT NULL AUTO_INCREMENT,
-        `role_name` enum('admin', 'vendor', 'customer') NOT NULL,
-        PRIMARY KEY (`role_id`)
-    )
+        `role_id` int AUTO_INCREMENT PRIMARY KEY,
+        `role_name` enum('admin', 'vendor', 'customer') NOT NULL
+    );
 
 CREATE TABLE
     `user` (
@@ -25,23 +24,22 @@ CREATE TABLE
         UNIQUE KEY `username` (`username`),
         KEY `user_role_fk` (`role_id`),
         CONSTRAINT `user_role_fk` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`)
-    )
+    );
 
 CREATE TABLE
     `product` (
         `product_id` int NOT NULL AUTO_INCREMENT,
         `name` varchar(255) NOT NULL,
-        `description` text,
         `rating` int DEFAULT '0',
         `rating_count` int DEFAULT '0',
         `category` enum(
-            'sticky note',
+            'sticky notes',
             'notebook',
             'tablet',
             'bundle'
         ) DEFAULT NULL,
         PRIMARY KEY (`product_id`)
-    )
+    );
 
 CREATE TABLE
     `color` (
@@ -49,7 +47,7 @@ CREATE TABLE
         `color_name` varchar(30) NOT NULL,
         PRIMARY KEY (`color_id`),
         UNIQUE KEY `color_name` (`color_name`)
-    )
+    );
 
 CREATE TABLE
     `size` (
@@ -57,7 +55,7 @@ CREATE TABLE
         `size_name` varchar(30) NOT NULL,
         PRIMARY KEY (`size_id`),
         UNIQUE KEY `size_name` (`size_name`)
-    )
+    );
 
 CREATE TABLE
     `product_variant` (
@@ -65,11 +63,6 @@ CREATE TABLE
         `product_id` int NOT NULL,
         `color_id` int NOT NULL,
         `size_id` int DEFAULT NULL,
-        `price` decimal(10, 2) NOT NULL DEFAULT '0.00',
-        `inv_amount` int NOT NULL DEFAULT '1',
-        `img_url` text,
-        `disc_price` decimal(10, 2) DEFAULT NULL,
-        `disc_end_date` date DEFAULT NULL,
         PRIMARY KEY (`prod_var_id`),
         KEY `prod_var_prod_fk` (`product_id`),
         KEY `prod_var_color_fk` (`color_id`),
@@ -77,19 +70,25 @@ CREATE TABLE
         CONSTRAINT `prod_var_color_fk` FOREIGN KEY (`color_id`) REFERENCES `color` (`color_id`),
         CONSTRAINT `prod_var_prod_fk` FOREIGN KEY (`product_id`) REFERENCES `product` (`product_id`),
         CONSTRAINT `prod_var_size_fk` FOREIGN KEY (`size_id`) REFERENCES `size` (`size_id`)
-    )
+    );
 
 CREATE TABLE
     `vendor_product` (
         `vendor_prod_id` int NOT NULL AUTO_INCREMENT,
         `user_id` int NOT NULL,
         `prod_var_id` int NOT NULL,
+        `price` decimal(10, 2) NOT NULL DEFAULT '0.00',
+        `inventory` int NOT NULL DEFAULT '1',
+        `img_url` text,
+        `description` text,
+        `disc_price` decimal(10, 2) DEFAULT NULL,
+        `disc_end_date` date DEFAULT NULL,
         PRIMARY KEY (`vendor_prod_id`),
         KEY `vend_prod_user_fk` (`user_id`),
         KEY `vend_prod_prod_var_fk_idx` (`prod_var_id`),
         CONSTRAINT `vend_prod_prod_var_fk` FOREIGN KEY (`prod_var_id`) REFERENCES `product_variant` (`prod_var_id`),
         CONSTRAINT `vend_prod_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-    )
+    );
 
 CREATE TABLE
     `cart` (
@@ -99,7 +98,7 @@ CREATE TABLE
         PRIMARY KEY (`cart_id`),
         KEY `cart_user_fk` (`user_id`),
         CONSTRAINT `cart_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-    )
+    );
 
 CREATE TABLE
     `cart_item` (
@@ -113,7 +112,7 @@ CREATE TABLE
         KEY `cart_item_prod_var_fk` (`prod_var_id`),
         CONSTRAINT `cart_item_cart_fk` FOREIGN KEY (`cart_id`) REFERENCES `cart` (`cart_id`),
         CONSTRAINT `cart_item_prod_var_fk` FOREIGN KEY (`prod_var_id`) REFERENCES `product_variant` (`prod_var_id`)
-    )
+    );
 
 CREATE TABLE
     `invoice` (
@@ -129,21 +128,38 @@ CREATE TABLE
         PRIMARY KEY (`order_id`),
         KEY `orders_user_fk` (`user_id`),
         CONSTRAINT `orders_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-    )
+    );
 
 CREATE TABLE
-    `sold_product` (
-        `sold_prod_id` int NOT NULL AUTO_INCREMENT,
+    `invoice_item` (
+        `invoice_item_id` int NOT NULL AUTO_INCREMENT,
         `order_id` int NOT NULL,
         `prod_var_id` int NOT NULL,
         `quantity` int NOT NULL,
         `price` decimal(10, 2) NOT NULL,
-        PRIMARY KEY (`sold_prod_id`),
-        KEY `purch_item_order_fk` (`order_id`),
-        KEY `purch_item_prod_var_fk` (`prod_var_id`),
-        CONSTRAINT `purch_item_order_fk` FOREIGN KEY (`order_id`) REFERENCES `invoice` (`order_id`),
-        CONSTRAINT `purch_item_prod_var_fk` FOREIGN KEY (`prod_var_id`) REFERENCES `product_variant` (`prod_var_id`)
-    )
+        PRIMARY KEY (`invoice_item_id`),
+        KEY `invoice_item_order_fk` (`order_id`),
+        KEY `invoice_item_prod_var_fk` (`prod_var_id`),
+        CONSTRAINT `invoice_item_order_fk` FOREIGN KEY (`order_id`) REFERENCES `invoice` (`order_id`),
+        CONSTRAINT `invoice_item_prod_var_fk` FOREIGN KEY (`prod_var_id`) REFERENCES `product_variant` (`prod_var_id`)
+    );
+
+CREATE TABLE
+    `review` (
+        `review_id` int NOT NULL AUTO_INCREMENT,
+        `user_id` int NOT NULL,
+        `product_id` int NOT NULL,
+        `review_text` text NOT NULL,
+        `rating` int NOT NULL,
+        PRIMARY KEY (`review_id`),
+        INDEX `review_user_fk_idx` (`user_id` ASC) VISIBLE,
+        INDEX `review_prod_fk_idx` (`product_id` ASC) VISIBLE,
+        CONSTRAINT `review_user_fk` FOREIGN KEY (`user_id`) REFERENCES `ecommerce_webapp`.`user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+        CONSTRAINT `review_prod_fk` FOREIGN KEY (`product_id`) REFERENCES `ecommerce_webapp`.`product` (`product_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+        CONSTRAINT `rating_check` CHECK (
+            rating BETWEEN 1 AND 5
+        )
+    );
 
 CREATE TABLE
     `chat` (
@@ -155,7 +171,7 @@ CREATE TABLE
         KEY `chat_user_fk` (`customer_id`),
         CONSTRAINT `chat_rep_fk` FOREIGN KEY (`representative_id`) REFERENCES `user` (`user_id`),
         CONSTRAINT `chat_user_fk` FOREIGN KEY (`customer_id`) REFERENCES `user` (`user_id`)
-    )
+    );
 
 CREATE TABLE
     `message` (
@@ -169,7 +185,7 @@ CREATE TABLE
         KEY `msg_sender_fk_idx` (`sender_id`),
         CONSTRAINT `msg_chat_fk` FOREIGN KEY (`chat_id`) REFERENCES `chat` (`chat_id`),
         CONSTRAINT `msg_sender_fk` FOREIGN KEY (`sender_id`) REFERENCES `user` (`user_id`)
-    )
+    );
 
 CREATE TABLE
     `dispute` (
@@ -178,7 +194,7 @@ CREATE TABLE
         `dispute_admin` int NOT NULL,
         `chat_id` int NOT NULL,
         `order_id` int NOT NULL,
-        `sold_prod_id` int NOT NULL,
+        `invoice_item_id` int NOT NULL,
         `request` enum('return', 'exchange') NOT NULL,
         `description` text NOT NULL,
         `dispute_date` date NOT NULL DEFAULT (curdate()),
@@ -193,13 +209,366 @@ CREATE TABLE
         KEY `dispute_cust_fk` (`dispute_customer`),
         KEY `dispute_admin_fk` (`dispute_admin`),
         KEY `dispute_order_fk` (`order_id`),
-        KEY `dispute_sold_prod_fk` (`sold_prod_id`),
+        KEY `dispute_invoice_item_fk` (`invoice_item_id`),
         KEY `dispute_chat_fk_idx` (`chat_id`),
         CONSTRAINT `dispute_admin_fk` FOREIGN KEY (`dispute_admin`) REFERENCES `user` (`user_id`),
         CONSTRAINT `dispute_chat_fk` FOREIGN KEY (`chat_id`) REFERENCES `chat` (`chat_id`),
         CONSTRAINT `dispute_cust_fk` FOREIGN KEY (`dispute_customer`) REFERENCES `user` (`user_id`),
         CONSTRAINT `dispute_order_fk` FOREIGN KEY (`order_id`) REFERENCES `invoice` (`order_id`),
-        CONSTRAINT `dispute_sold_prod_fk` FOREIGN KEY (`sold_prod_id`) REFERENCES `sold_product` (`sold_prod_id`)
-    )
+        CONSTRAINT `dispute_invoice_item_fk` FOREIGN KEY (`invoice_item_id`) REFERENCES `invoice_item` (`invoice_item_id`)
+    );
 
-INSERT INTO role (role_name) VALUES ('admin', 'customer', 'representative');
+INSERT INTO role (role_name)
+VALUES ('customer'), ('vendor'), ('admin');
+
+
+-- all select queries
+select * from role;
+select * from user;
+select * from product;
+select * from color;
+select * from size;
+select * from product_variant;
+select * from vendor_product;
+select * from cart;
+select * from cart_item;
+select * from invoice;
+select * from invoice_item;
+select * from chat;
+select * from message;
+select * from dispute;
+
+
+-- filler
+
+INSERT INTO
+    `ecommerce_webapp`.`user` (
+        `user_id`,
+        `role_id`,
+        `email`,
+        `username`,
+        `first_name`,
+        `last_name`,
+        `password`
+    )
+VALUES (
+        '1',
+        '2',
+        'test@test.com',
+        'test',
+        'test',
+        'test',
+        'test'
+    );
+
+INSERT INTO
+    `ecommerce_webapp`.`user` (
+        `user_id`,
+        `role_id`,
+        `email`,
+        `username`,
+        `first_name`,
+        `last_name`,
+        `password`
+    )
+VALUES (
+        '2',
+        '1',
+        'david@david.com',
+        'david',
+        'david',
+        'leach',
+        'password'
+    );
+
+INSERT INTO
+    `ecommerce_webapp`.`user` (
+        `user_id`,
+        `role_id`,
+        `email`,
+        `username`,
+        `first_name`,
+        `last_name`,
+        `password`
+    )
+VALUES (
+        '3',
+        '2',
+        'earl@earl.com',
+        'earl',
+        'earl',
+        'kennedy',
+        'password'
+    );
+
+INSERT INTO
+    `ecommerce_webapp`.`user` (
+        `user_id`,
+        `role_id`,
+        `email`,
+        `username`,
+        `first_name`,
+        `last_name`,
+        `password`
+    )
+VALUES (
+        '4',
+        '3',
+        'tim@tim.com',
+        'tim',
+        'tim',
+        'jefferson',
+        'password'
+    );
+
+
+
+INSERT INTO
+    `ecommerce_webapp`.`product` (
+        `product_id`,
+        `name`,
+        `rating`,
+        `rating_count`,
+        `category`
+    )
+VALUES (
+        '1',
+        'bright sticky notes',
+        '0',
+        '0',
+        'sticky notes'
+    );
+
+INSERT INTO
+    `ecommerce_webapp`.`product` (
+        `product_id`,
+        `name`,
+        `rating`,
+        `rating_count`,
+        `category`
+    )
+VALUES (
+        '2',
+        'unlined notebook',
+        '0',
+        '0',
+        'notebook'
+    );
+
+
+
+INSERT INTO
+    `ecommerce_webapp`.`color` (`color_id`, `color_name`)
+VALUES ('1', 'black');
+
+INSERT INTO
+    `ecommerce_webapp`.`color` (`color_id`, `color_name`)
+VALUES ('2', 'white');
+
+INSERT INTO
+    `ecommerce_webapp`.`color` (`color_id`, `color_name`)
+VALUES ('3', 'assorted');
+
+
+
+INSERT INTO
+    `ecommerce_webapp`.`size` (`size_id`, `size_name`)
+VALUES ('1', '3\"x3\"');
+
+INSERT INTO
+    `ecommerce_webapp`.`size` (`size_id`, `size_name`)
+VALUES ('2', '3\"x5\"');
+
+INSERT INTO
+    `ecommerce_webapp`.`size` (`size_id`, `size_name`)
+VALUES ('3', '1\"x1.5\"');
+
+INSERT INTO
+    `ecommerce_webapp`.`size` (`size_id`, `size_name`)
+VALUES ('4', 'B4');
+
+INSERT INTO
+    `ecommerce_webapp`.`size` (`size_id`, `size_name`)
+VALUES ('5', 'A4');
+
+INSERT INTO
+    `ecommerce_webapp`.`size` (`size_id`, `size_name`)
+VALUES ('6', 'B5');
+
+
+
+INSERT INTO
+    `ecommerce_webapp`.`product_variant` (
+        `prod_var_id`,
+        `product_id`,
+        `color_id`,
+        `size_id`
+    )
+VALUES ('1', '1', '3', '1');
+
+INSERT INTO
+    `ecommerce_webapp`.`product_variant` (
+        `prod_var_id`,
+        `product_id`,
+        `color_id`,
+        `size_id`
+    )
+VALUES ('2', '2', '1', '4');
+
+INSERT INTO
+    `ecommerce_webapp`.`product_variant` (
+        `prod_var_id`,
+        `product_id`,
+        `color_id`,
+        `size_id`
+    )
+VALUES ('3', '2', '1', '6');
+
+INSERT INTO
+    `ecommerce_webapp`.`product_variant` (
+        `prod_var_id`,
+        `product_id`,
+        `color_id`,
+        `size_id`
+    )
+VALUES ('4', '2', '2', '4');
+
+INSERT INTO
+    `ecommerce_webapp`.`product_variant` (
+        `prod_var_id`,
+        `product_id`,
+        `color_id`,
+        `size_id`
+    )
+VALUES ('5', '2', '2', '6');
+
+
+
+INSERT INTO
+    `ecommerce_webapp`.`vendor_product` (
+        `vendor_prod_id`,
+        `user_id`,
+        `prod_var_id`,
+        `price`,
+        `inventory`,
+        `img_url`,
+        `description`
+    )
+VALUES (
+        '1',
+        '1',
+        '1',
+        '2.99',
+        '200',
+        'https://cdn.pixabay.com/photo/2013/08/03/18/43/postit-169631_960_720.jpg',
+        'A stack of sticky notes in assorted bright colors'
+    );
+
+INSERT INTO
+    `ecommerce_webapp`.`vendor_product` (
+        `vendor_prod_id`,
+        `user_id`,
+        `prod_var_id`,
+        `price`,
+        `inventory`,
+        `img_url`,
+        `description`,
+        `disc_price`,
+        `disc_end_date`
+    )
+VALUES (
+        '2',
+        '2',
+        '2',
+        '11.99',
+        '160',
+        'https://cdn.pixabay.com/photo/2016/02/11/20/21/notebook-1194456_960_720.jpg',
+        'An unlined notebook with 90 pages',
+        '9.99',
+        '2023-06-01'
+    );
+
+INSERT INTO
+    `ecommerce_webapp`.`vendor_product` (
+        `vendor_prod_id`,
+        `user_id`,
+        `prod_var_id`,
+        `price`,
+        `inventory`,
+        `img_url`,
+        `description`
+    )
+VALUES (
+        '3',
+        '2',
+        '3',
+        '9.99',
+        '200',
+        'https://cdn.pixabay.com/photo/2016/02/11/20/21/notebook-1194456_960_720.jpg',
+        'An unlined notebook with 90 pages'
+    );
+
+INSERT INTO
+    `ecommerce_webapp`.`vendor_product` (
+        `vendor_prod_id`,
+        `user_id`,
+        `prod_var_id`,
+        `price`,
+        `inventory`,
+        `img_url`,
+        `description`,
+        `disc_price`,
+        `disc_end_date`
+    )
+VALUES (
+        '4',
+        '2',
+        '4',
+        '11.99',
+        '150',
+        'https://cdn.pixabay.com/photo/2016/02/11/20/21/notebook-1194456_960_720.jpg',
+        'An unlined notebook with 90 pages',
+        '8.99',
+        '2023-06-01'
+    );
+
+INSERT INTO
+    `ecommerce_webapp`.`vendor_product` (
+        `vendor_prod_id`,
+        `user_id`,
+        `prod_var_id`,
+        `price`,
+        `inventory`,
+        `img_url`,
+        `description`
+    )
+VALUES (
+        '5',
+        '2',
+        '5',
+        '9.99',
+        '120',
+        'https://cdn.pixabay.com/photo/2016/02/11/20/21/notebook-1194456_960_720.jpg',
+        'An unlined notebook with 90 pages'
+    );
+
+INSERT INTO
+    `ecommerce_webapp`.`vendor_product` (
+        `vendor_prod_id`,
+        `user_id`,
+        `prod_var_id`,
+        `price`,
+        `inventory`,
+        `img_url`,
+        `description`
+    )
+VALUES (
+        '6',
+        '1',
+        '3',
+        '9.98',
+        '500',
+        'https://cdn.pixabay.com/photo/2016/02/11/20/21/notebook-1194456_960_720.jpg',
+        'An unlined notebook with 90 pages'
+    );
+
