@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, redirect, url_for, session, flash, request
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
 from flask_wtf import FlaskForm
 from wtforms import (
     StringField,
@@ -84,10 +83,10 @@ def login():
     form.csrf_token.data = generate_csrf()
     
     if "username" in session:
-        print('login session exists')
+        print('login session exists') # TODO: Remove
         flash("You are already logged in", "error")
         print(session) # TODO: Remove
-        print('test1')
+        print('test1') # TODO: Remove
         return redirect(url_for("general_bp.home"))
     elif request.method == "POST":        
         if form.validate_on_submit(): 
@@ -101,38 +100,38 @@ def login():
             cursor.close()
             if result:
                 if result[4] == password:
-                    session["username"] = result[3]
-                    session["email"] = result[2]
-                    session["role_id"] = result[1]
-                    session["csrf_token"] = form.csrf_token.data
                     session["user_id"] = result[0]
-                    print('login password correct')
+                    session["role_id"] = result[1]
+                    session["email"] = result[2]
+                    session["username"] = result[3]
+                    session["csrf_token"] = form.csrf_token.data
+                    print('login password correct') # TODO: Remove
                     flash("You are now logged in", "success")
                     print(session) # TODO: Remove
-                    print('test2')
+                    print('test2') # TODO: Remove
                     return redirect(url_for("general_bp.home"))
                 else:
                     flash("Incorrect password", "error")
                     print(session) # TODO: Remove
-                    print('test3')
+                    print('test3') # TODO: Remove
                     return redirect(url_for("auth_bp.login"))
             else:
                 flash("Email not found", "error")
                 print(session) # TODO: Remove
-                print('test4')
+                print('test4') # TODO: Remove
                 return redirect(url_for("auth_bp.login"))
         else:
             flash("Please fill out the form correctly", "error")
             print(session) # TODO: Remove
-            print('test5')
-            print(form.errors)
+            print('test5') # TODO: Remove
+            print(form.errors) # TODO: Remove
             return redirect("auth/login.html")
 
     else:
-        session.clear() # ? Potential fix to the session issue ???
+        session.clear()
         print(session) # TODO: Remove
-        print('test6')
-        print('login no session')
+        print('test6') # TODO: Remove
+        print('login no session') # TODO: Remove
         return render_template(
             "auth/login.html", form=form, email=email, password=password, remember=remember
         )
@@ -159,6 +158,7 @@ def register():
             confirm_password = form.confirm_password.data
             role = form.role.data
             role_id:int
+            
             # Check role response
             role = form.role.data
             if role.lower() == "yes":
@@ -206,6 +206,6 @@ def register():
 
 @auth_bp.route("logout/")
 def logout():
-    print('logout')
+    print('logout') # TODO: Remove
     session.clear()
     return redirect(url_for("general_bp.home"))

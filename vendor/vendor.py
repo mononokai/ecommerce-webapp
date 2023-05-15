@@ -20,19 +20,20 @@ vendor_bp = Blueprint("vendor_bp", __name__, static_folder="static", template_fo
 
 # Product Class
 class ProductForm(FlaskForm):
-    product_name = StringField(
+    name = StringField(
         "Product Name", validators=[DataRequired(), Length(min=2, max=255)]
     )
-    product_description = TextAreaField(
+    description = TextAreaField(
         "Product Description", validators=[DataRequired(), Length(min=20, max=10000)]
     )
-    product_image = StringField("Product Image Link", validators=[DataRequired()])
-    stock_amount = IntegerField("Stock Amount", validators=[DataRequired()])
-    product_price = DecimalField("Product Price", validators=[DataRequired()], places=2)
-    discount_percentage = SelectField("Discount Percentage", choices=[(0.00, 'None'), (0.05, '5%'), (0.10, '10%'), (0.15, '15%'), (0.20, '20%'), (0.25, '25%'), (0.30, '30%'), (0.35, '35%'), (0.40, '40%'), (0.45, '45%'), (0.50, '50%'), (0.55, '55%'), (0.60, '60%'), (0.65, '65%'), (0.70, '70%'), (0.75, '75%'), (0.80, '80%')], validators=[DataRequired()])
-    discount_start_date = DateField("Discount Start Date")
-    discount_end_date = DateField("Discount End Date")
     category = SelectField("Product Category", choices=[("sticky note", "Sticky Note"), ("tablet", "Tablet"), ("notebook", "Notebook"), ("bundle", "Bundle")])
+    color_name = StringField("Product Color", validators=[DataRequired()])
+    size_name = StringField("Product Size")
+    inv_amount = IntegerField("Stock Amount", validators=[DataRequired()])
+    img_url = StringField("Product Image Link", validators=[DataRequired()])
+    price = DecimalField("Product Price", validators=[DataRequired()], places=2)
+    disc_price = DecimalField("Discount Price", validators=[DataRequired()], places=2)
+    disc_end_date = DateField("Discount End Date")
     submit = SubmitField("Add Product")
 
 
@@ -49,34 +50,59 @@ def product_overview():
 
 @vendor_bp.route('add_product/', methods=["GET", "POST"])
 def add_product():
-    product_name = None
-    product_description = None
-    product_image = None
-    stock_amount = None
-    product_price = None
-    discount_percentage = None
-    discount_start_date = None
-    discount_end_date = None
+    name = None
+    description = None
     category = None
+    color_name = None
+    size_name = None
+    inv_amount = None
+    img_url = None
+    price = None
+    disc_price = None
+    disc_end_date = None
     form = ProductForm()
 
     if request.method == "POST":
-        product_name = form.product_name.data
-        product_description = form.product_description.data
-        product_image = form.product_image.data
-        stock_amount = form.stock_amount.data
-        product_price = form.product_price.data
-        discount_percentage = form.discount_percentage.data
-        discount_start_date = form.discount_start_date.data
-        discount_end_date = form.discount_end_date.data
+        name = form.product_name.data
+        description = form.description.data
         category = form.category.data
+        color_name = form.color_name.data.lower()
+        size_name = form.size_name.data.lower()
+        inv_amount = form.stock_amount.data
+        img_url = form.product_image.data
+        price = form.product_price.data
+        disc_price = form.discount_percentage.data
+        disc_end_date = form.discount_end_date.data
 
         if session['role_id'] != 2:
             flash("You are not authorized to add products!", "danger")
             return redirect(url_for("vendor_bp.product_overview"))
         else:
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO product (product_name, product_description, product_images, stock_amount, product_price, discount_percentage, discount_start_date, discount_end_date, category, rating) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (product_name, product_description, product_image, stock_amount, product_price, discount_percentage, discount_start_date, discount_end_date, category, 0))
+            cursor.execute("INSERT INTO product (name, product_description, img_url, inv_amount, price, disc_price, disc_end_date, category) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (name, description, img_url, inv_amount, price, disc_price, disc_end_date, category))
+            cursor.nextset()
+            cursor.execute("INSERT INTO vendor_product (user_id, product_id) VALUES (%s, %s)", (session['user_id'], cursor.lastrowid))
+
+            # color check
+            cursor.nextset()
+            cursor.execute("SELECT * FROM color WHERE LOWER(color_name) = %s", (color_name,))
+            color = cursor.fetchone()
+            if color is None:
+                cursor.nextset()
+                cursor.execute("INSERT INTO color (color_name) VALUES (%s)", (color_name,))
+
+            # size check
+            cursor.nextset()
+            cursor.execute("SELECT * FROM size WHERE LOWER(size_name) = %s", (size_name,))
+            size = cursor.fetchone()
+            if size is None:
+                cursor.nextset()
+                cursor.execute("INSERT INTO size (size_name) VALUES (%s)", (size_name,))
+            cursor.nextset()
+            # TODO: product variant (figure out how to make sure that the product variant is unique)
+
+            # TODO: vendor product
+
             conn.commit()
             cursor.close()
 

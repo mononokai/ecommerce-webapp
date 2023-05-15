@@ -22,12 +22,7 @@ def account_overview(username):
 
 @user_bp.route('chat/')
 def chat():
-    # return render_template('user/chat.html')
-    cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) FROM role;")
-    result = cursor.fetchone()[0]
-    cursor.close()
-    return f"Number of roles: {result}"
+    return render_template('user/chat.html')
 
 
 @user_bp.route('chat/<chat_id>/')
