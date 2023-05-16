@@ -14,27 +14,38 @@
 
         {{ form.name.label }}
         {{ form.name }}
-
-        {{ form.description.label }}
-        {{ form.description(rows=10) }}
-
-        {{ form.img_url.label }}
-        {{ form.img_url }}
-
-        {{ form.price.label }}
-        {{ form.price }}
-
-        {{ form.inventory.label }}
-        {{ form.inventory }}
-
+        
         {{ form.category.label }}
         {{ form.category }}
         
-        {{ form.disc_price.label }}
-        {{ form.disc_price }}
+        {{ form.color_name.label }}
+        {{ form.color_name }}
+        
+        {{ form.size_name.label }}
+        {{ form.size_name }}
+        
+        {{ form.price.label }}
+        {{ form.price }}
+        
+        {{ form.inventory.label }}
+        {{ form.inventory }}
+        
+        {{ form.img_url.label }}
+        {{ form.img_url }}
+        
+        {{ form.description.label }}
+        {{ form.description(rows=10) }}
+        
+        {{ form.discount.label }}
+        {{ form.discount }}
 
-        {{ form.disc_end_date.label }}
-        {{ form.disc_end_date }}
+        <div id="discount-fields" hidden>
+            {{ form.disc_price.label }}
+            {{ form.disc_price }}
+    
+            {{ form.disc_end_date.label }}
+            {{ form.disc_end_date }}
+        </div>
 
         {{ form.submit }}
     </form>

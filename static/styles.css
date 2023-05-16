@@ -44,6 +44,10 @@ form > input[type='submit'] {
 
 /* ----- Products ------ */
 
+.hidden {
+    display: none;
+}
+
 .product-overview-links {
     display: flex;
     justify-content: space-between;

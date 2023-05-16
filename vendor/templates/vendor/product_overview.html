@@ -10,15 +10,6 @@
     <h1>Product Overview</h1>
     
     <div class="product-overview-links">
-        <!-- filter -->
-        <form action="{{ url_for('vendor_bp.product_overview') }}" method="POST">
-            <select name="filter">
-                <option value="stock_amount">Stock Amount</option>
-                <option value="category">Category</option>
-                <option value="rating">Rating</option>
-            </select>
-            <button type="submit">Filter</button>
-        </form>
         <!-- search -->
         <form action="{{ url_for('vendor_bp.product_overview') }}" method="POST">
             <input type="text" name="search" placeholder="Search">
@@ -28,27 +19,27 @@
     </div>
 
     <div class="product-container">
-        <div class="product-card">
-            {% if products == [] %}
-                <p>No products to display</p>
-            {% endif %}
-            {% for product in products %}
+        {% if products == [] %}
+        <p>No products to display</p>
+        {% endif %}
+        {% for product in products %}
+            <div class="product-card">
                 <div class="product-image">
-                    <img src="{{ url_for('static', filename='images/placeholder.png') }}" alt="product image">
+                    <img src="{{ product.img_url }}" alt="product image" width="200">
                 </div>
                 <div class="product-info">
-                    <h2>{{ product.product_name }}</h2>
-                    <p>{{ product.product_price }}</p>
-                    <p>{{ product.stock_amount }}</p>
-                    <p>{{ product.category }}</p>
-                    <p>{{ product.rating }}</p>
+                    <h2>{{ product.name.title() }}</h2>
+                    <p>Price: {{ product.price }}</p>
+                    <p>Inventory: {{ product.inventory }}</p>
+                    <p>Category: {{ product.category.title() }}</p>
+                    <p>Rating: {{ product.rating }}</p>
                 </div>
                 <div class="product-links">
                     <a href="{{ url_for('vendor_bp.edit_product', product_id=product.product_id) }}">Edit</a>
                     <a href="{{ url_for('vendor_bp.delete_product', product_id=product.product_id) }}">Delete</a>
                 </div>
-            {% endfor %}
-        </div>
+            </div>
+        {% endfor %}
     </div>
 </div>
 
