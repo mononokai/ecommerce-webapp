@@ -33,7 +33,7 @@
                     <p>Rating: {{ product.rating }}</p>
                 </div>
                 <div class="product-links">
-                    <a href="{{ url_for('admin_bp.edit_product', prod_var_id=product.prod_var_id) }}">Edit</a>
+                    <a href="{{ url_for('admin_bp.edit_product', vendor_prod_id=product.vendor_prod_id) }}">Edit</a>
                     <a href="{{ url_for('admin_bp.delete_product', vendor_prod_id=product.vendor_prod_id) }}">Delete</a>
                 </div>
             </div>
