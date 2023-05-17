@@ -1,4 +1,5 @@
 from flask import Flask, session, render_template, redirect, url_for, request, flash
+from sqlalchemy import text
 from db.db import conn
 from general.general import general_bp
 from admin.admin import admin_bp
@@ -24,11 +25,9 @@ app.secret_key = "secret"
 # DB test
 @app.route('/db_test/')
 def db_test():
-    cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) FROM role;")
-    result = cursor.fetchone()[0]
-    cursor.close()
-    return f"Number of roles: {result}"
+    # count number of roles
+    roles = conn.execute(text("SELECT COUNT(*) FROM role")).fetchone()[0]
+    return f"Number of roles: {roles}"
 
 
 

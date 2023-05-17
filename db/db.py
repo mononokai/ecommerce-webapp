@@ -1,4 +1,5 @@
-import mysql.connector
+from sqlalchemy import create_engine
 
 
-conn = mysql.connector.connect(user="david", database="ecommerce_webapp")
+engine = create_engine("mysql://david@localhost/ecommerce_webapp", echo=True)
+conn = engine.connect()

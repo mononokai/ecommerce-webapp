@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, session, flash, request
+from sqlalchemy import text
 from db.db import conn
+from db.queries import full_product_select as fps
 from flask_wtf import FlaskForm
 from wtforms import (
     StringField,
@@ -35,20 +37,15 @@ class ProductForm(FlaskForm):
     discount = SelectField("Is there a discount?", choices=[("no", "No"), ("yes", "Yes")])
     disc_price = DecimalField("Discount Price", default=None, places=2)
     disc_end_date = DateField("Discount End Date", default=None)
-    submit = SubmitField("Add Product")
+    submit_add = SubmitField("Add Product")
+    submit_edit = SubmitField("Edit Product")
 
 
-@vendor_bp.route('product_overview/', methods=["GET", "POST"])
+@vendor_bp.route('product_overview/')
 def product_overview():
-    cursor = conn.cursor()
-    cursor.execute("select * from product_variant as pv inner join vendor_product as vp on pv.prod_var_id = vp.prod_var_id inner join product as p on pv.product_id = p.product_id inner join user on vp.user_id = user.user_id where user.user_id = %s;", (session['user_id'],))
-    rows = cursor.fetchall()
-    columns = [desc[0] for desc in cursor.description]
-    products = [dict(zip(columns, row)) for row in rows]
-    cursor.close()
+    products = conn.execute(text(f"{ fps } where user.user_id = :user_id;"), { 'user_id': session['user_id'] }).fetchall()
+    print(products)
     
-    print(session['user_id']) # TODO: remove
-    print(products[0]) # TODO: remove
     return render_template('vendor/product_overview.html', products=products)
 
 
@@ -70,8 +67,8 @@ def add_product():
     form = ProductForm()
 
     if request.method == "POST":
-        name = form.name.data
-        category = form.category.data
+        name = form.name.data.lower()
+        category = form.category.data.lower()
         color_name = form.color_name.data.lower()
         size_name = form.size_name.data.lower()
         price = form.price.data
@@ -85,66 +82,38 @@ def add_product():
             flash("You are not authorized to add products!", "danger")
             return redirect(url_for("vendor_bp.product_overview"))
         else:
-            # insert product
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO product (name, category) VALUES (%s, %s)", (name, category))
+            # product check
+            product = conn.execute(text("SELECT * FROM product WHERE name = :name"), { 'name': name }).fetchone()
+            if product is None:
+                conn.execute(text("INSERT INTO product (name, category) VALUES (:name, :category)"), { 'name': name, 'category': category })
 
             # color check
-            cursor.nextset()
-            cursor.execute("SELECT * FROM color WHERE LOWER(color_name) = %s", (color_name,))
-            color = cursor.fetchone()
+            color = conn.execute(text("SELECT * FROM color WHERE LOWER(color_name) = :color_name"), { 'color_name': color_name }).fetchone()
             if color is None:
-                cursor.nextset()
-                cursor.execute("INSERT INTO color (color_name) VALUES (%s)", (color_name,))
+                conn.execute(text("INSERT INTO color (color_name) VALUES (:color_name)"), { 'color_name': color_name })
 
             # size check
-            cursor.nextset()
-            cursor.execute("SELECT * FROM size WHERE LOWER(size_name) = %s", (size_name,))
-            size = cursor.fetchone()
+            size = conn.execute(text("SELECT * FROM size WHERE LOWER(size_name) = :size_name"), { 'size_name': size_name }).fetchone()
             if size is None:
-                cursor.nextset()
-                cursor.execute("INSERT INTO size (size_name) VALUES (%s)", (size_name,))
+                conn.execute(text("INSERT INTO size (size_name) VALUES :size_name"), { 'size_name': size_name })
 
             # store color, size, and product ids
-            cursor.nextset()
-            cursor.execute("SELECT * FROM color WHERE LOWER(color_name) = %s", (color_name,))
-            color = cursor.fetchone()
-            cursor.nextset()
-            cursor.execute("SELECT * FROM size WHERE LOWER(size_name) = %s", (size_name,))
-            size = cursor.fetchone()
-            cursor.nextset()
-            cursor.execute("SELECT * FROM product WHERE name = %s", (name,))
-            product = cursor.fetchone()
+            color = conn.execute(text("SELECT * FROM color WHERE LOWER(color_name) = :color_name"), { 'color_name': color_name }).fetchone()        
+            size = conn.execute(text("SELECT * FROM size WHERE LOWER(size_name) = :size_name"), { 'size_name': size_name }).fetchone()
+            product = conn.execute(text("SELECT * FROM product WHERE name = :name"), { 'name': name }).fetchone()
 
             # variant check
-            cursor.nextset()
-            cursor.execute("SELECT * FROM product_variant WHERE color_id = %s AND size_id = %s AND product_id = %s", (color[0], size[0], product[0]))
-            variant = cursor.fetchone()
+            variant = conn.execute(text("SELECT * FROM product_variant WHERE color_id = :color_id AND size_id = :size_id AND product_id = :product_id"), { 'color_id': color.color_id, 'size_id': size.size_id, 'product_id': product.product_id }).fetchone()
             if variant is None:
-                cursor.nextset()
-                cursor.execute("INSERT INTO product_variant (color_id, size_id, product_id) VALUES (%s, %s, %s)", (color[0], size[0], product[0]))
+                conn.execute(text("INSERT INTO product_variant (color_id, size_id, product_id) VALUES (:color_id, :size_id, :product_id)"), { 'color_id': color.color_id, 'size_id': size.size_id, 'product_id': product.product_id })
 
             # store product variant
-            cursor.nextset()
-            cursor.execute("SELECT * FROM product_variant WHERE color_id = %s AND size_id = %s AND product_id = %s", (color[0], size[0], product[0]))
-            variant = cursor.fetchone()
+            variant = conn.execute(text("SELECT * FROM product_variant WHERE color_id = :color_id AND size_id = :size_id AND product_id = :product_id;"), { 'color_id': color.color_id, 'size_id': size.size_id, 'product_id': product.product_id }).fetchone()
 
             # insert vendor product
-            cursor.nextset()
-            print(session['user_id'])
-            print('user_id ^^^^')
-            print(cursor.lastrowid)
-            print('lastrowid ^^^^')
-            print(f"price: {price}")
-            print(f"inventory: {inventory}")
-            print(f"img_url: {img_url}")
-            print(f"description: {description}")
-            print(f"disc_price: {disc_price}")
-            print(f"disc_end_date: {disc_end_date}")
-            cursor.execute("INSERT INTO vendor_product (user_id, prod_var_id, price, inventory, img_url, description, disc_price, disc_end_date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", (session['user_id'], variant[0], price, inventory, img_url, description, disc_price, disc_end_date))
+            conn.execute(text("INSERT INTO vendor_product (user_id, prod_var_id, price, inventory, img_url, description, disc_price, disc_end_date) VALUES (:user_id, :prod_var_id, :price, :inventory, :img_url, :description, :disc_price, :disc_end_date)"), { 'user_id': session['user_id'], 'prod_var_id': variant.prod_var_id, 'price': price, 'inventory': inventory, 'img_url': img_url, 'description': description, 'disc_price': disc_price, 'disc_end_date': disc_end_date })
 
             conn.commit()
-            cursor.close()
 
             flash("Product added successfully!", "success")
             return redirect(url_for("vendor_bp.product_overview"))
@@ -153,9 +122,95 @@ def add_product():
         return render_template('vendor/add_product.html', form=form)
 
 
-@vendor_bp.route('edit_product/')
-def edit_product():
-    return render_template('vendor/edit_product.html')
+@vendor_bp.route('/edit_product/<int:prod_var_id>', methods=['GET', 'POST'])
+def edit_product(prod_var_id):
+    form = ProductForm()
+    pv = conn.execute(text("select * from product_variant where prod_var_id = :prod_var_id;"), { 'prod_var_id': prod_var_id }).fetchone()
+    product = conn.execute(text("select * from product where product_id = :product_id;"), {'product_id': pv.product_id }).fetchone()
+    vp = conn.execute(text("select * from vendor_product where prod_var_id = :prod_var_id;"), { 'prod_var_id': prod_var_id }).fetchone()
+    color = conn.execute(text("select * from color where color_id = :color_id;"), { 'color_id': pv.color_id }).fetchone()
+    size = conn.execute(text("select * from size where size_id = :size_id;"), { 'size_id': pv.size_id }).fetchone()
+
+    if request.method == "POST":
+        name = form.name.data
+        category = form.category.data
+        color_name = form.color_name.data.lower()
+        size_name = form.size_name.data.lower()
+        price = form.price.data
+        inventory = form.inventory.data
+        img_url = form.img_url.data
+        description = form.description.data
+        disc_price = form.disc_price.data
+        disc_end_date = form.disc_end_date.data
+
+        if session['role_id'] != 2:
+            flash("You are not authorized to edit products!", "danger")
+            return redirect(url_for("general_bp.home"))
+        else:
+            # check if size changed
+            if size_name != size.size_name:
+                # check if size exists in table
+                size_check = conn.execute(text("select * from size where LOWER(size_name) = :size_name;"), { 'size_name': size_name }).fetchone()
+                if size_check is None:
+                    # insert the new size
+                    conn.execute(text("insert into size (size_name) values (:size_name);"), { 'size_name': size_name })
+            
+            # check if color changed
+            if color_name != color.color_name:
+                # check if color exists in table
+                color_check = conn.execute(text("select * from color where LOWER(color_name) = :color_name;"), { 'color_name': color_name }).fetchone()
+                if color_check is None:
+                    # insert the new color
+                    conn.execute(text("insert into color (color_name) values (:color_name);"), { 'color_name': color_name })
+            
+            # check if product changed
+            if name != product.name:
+                # check if product exists in table
+                product_check = conn.execute(text("select * from product where LOWER(name) = :name;"), { 'name': name }).fetchone()
+                if product_check is None:
+                    # insert the new product
+                    conn.execute(text("insert into product (name, category) values (:name, :category);"), { 'name': name, 'category': category })
+            
+            # store color, size and product again
+            color = conn.execute(text("select * from color where LOWER(color_name) = :color_name;"), { 'color_name': color_name }).fetchone()
+            size = conn.execute(text("select * from size where LOWER(size_name) = :size_name;"), { 'size_name': size_name }).fetchone()
+            product = conn.execute(text("select * from product where LOWER(name) = :name;"), { 'name': name }).fetchone()
+
+            # check if product variant exists
+            variant_check = conn.execute(text("select * from product_variant where color_id = :color_id and size_id = :size_id and product_id = :product_id;"), { 'color_id': color.color_id, 'size_id': size.size_id, 'product_id': product.product_id }).fetchone()
+            if variant_check is None:
+                # insert the new product variant
+                conn.execute(text("insert into product_variant (color_id, size_id, product_id) values (:color_id, :size_id, :product_id);"), { 'color_id': color.color_id, 'size_id': size.size_id, 'product_id': product.product_id })
+            
+            # store product variant again
+            variant = conn.execute(text("select * from product_variant where color_id = :color_id and size_id = :size_id and product_id = :product_id;"), { 'color_id': color.color_id, 'size_id': size.size_id, 'product_id': product.product_id }).fetchone()
+
+            # check if vendor product exists
+            vendor_product_check = conn.execute(text("select * from vendor_product where prod_var_id = :prod_var_id;"), { 'prod_var_id': variant.prod_var_id }).fetchone()
+            if vendor_product_check is None:
+                # update the current vendor product
+                conn.execute(text("update vendor_product set price = :price, inventory = :inventory, img_url = :img_url, description = :description, disc_price = :disc_price, disc_end_date = :disc_end_date where prod_var_id = :prod_var_id;"), { 'price': price, 'inventory': inventory, 'img_url': img_url, 'description': description, 'disc_price': disc_price, 'disc_end_date': disc_end_date, 'prod_var_id': variant.prod_var_id })
+            else:
+                flash ("Product already exists!", "danger")
+                return redirect(url_for("vendor_bp.product_overview"))
+            
+            conn.commit()
+            flash("Product edited successfully!", "success")
+            return redirect(url_for("vendor_bp.product_overview"))           
+        
+    else:
+        form.name.data = product.name.title()
+        form.category.data = product.category
+        form.color_name.data = color.color_name.title()
+        form.size_name.data = size.size_name.title()
+        form.price.data = vp.price
+        form.inventory.data = vp.inventory
+        form.img_url.data = vp.img_url
+        form.description.data = vp.description
+        form.disc_price.data = vp.disc_price
+        form.disc_end_date.data = vp.disc_end_date
+
+        return render_template('vendor/edit_product.html', form=form)
 
 
 @vendor_bp.route('delete_product/')

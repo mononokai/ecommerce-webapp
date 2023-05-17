@@ -10,11 +10,6 @@
     <h1>Product Overview</h1>
     
     <div class="product-overview-links">
-        <!-- search -->
-        <form action="{{ url_for('vendor_bp.product_overview') }}" method="POST">
-            <input type="text" name="search" placeholder="Search">
-            <button type="submit">Search</button>
-        </form>
         <a href="{{ url_for('vendor_bp.add_product') }}">add product</a>
     </div>
 
@@ -30,13 +25,15 @@
                 <div class="product-info">
                     <h2>{{ product.name.title() }}</h2>
                     <p>Price: {{ product.price }}</p>
+                    <p>Color: {{ product.color_name.title() }}</p>
+                    <p>Size: {{ product.size_name.title() }}</p>
                     <p>Inventory: {{ product.inventory }}</p>
                     <p>Category: {{ product.category.title() }}</p>
                     <p>Rating: {{ product.rating }}</p>
                 </div>
                 <div class="product-links">
-                    <a href="{{ url_for('vendor_bp.edit_product', product_id=product.product_id) }}">Edit</a>
-                    <a href="{{ url_for('vendor_bp.delete_product', product_id=product.product_id) }}">Delete</a>
+                    <a href="{{ url_for('vendor_bp.edit_product', prod_var_id=product.prod_var_id) }}">Edit</a>
+                    <a href="{{ url_for('vendor_bp.delete_product', prod_var_id=product.prod_var_id) }}">Delete</a>
                 </div>
             </div>
         {% endfor %}

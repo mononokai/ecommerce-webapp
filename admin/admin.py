@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template
+from sqlalchemy import text
 from db.db import conn
 
 admin_bp = Blueprint("admin_bp", __name__, static_folder="static", template_folder="templates")

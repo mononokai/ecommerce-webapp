@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, session, redirect, url_for, flash
+from sqlalchemy import text
 from db.db import conn
 
 
@@ -12,10 +13,7 @@ def account_overview(username):
         return redirect(url_for('auth_bp.login'))
     else:
         username = session['username']
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM user WHERE username = %s;", (username,))
-        user_info = cursor.fetchone()
-        cursor.close()
+        user_info = conn.execute(text("SELECT * FROM user WHERE username = :username"), {'username': username}).fetchone()
         print(session["username"])
         return render_template('user/account_overview.html', user_info=user_info)
 
