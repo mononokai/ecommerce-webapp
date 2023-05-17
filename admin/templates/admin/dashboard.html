@@ -1,0 +1,29 @@
+{% extends 'general/base.html' %}
+
+
+{% block title %}Admin Dashboard - Note Worthy{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+    <h1>Admin Dashboard</h1>
+    <div class="admin-chats dash-card">
+        <h2>Chats</h2>
+        <a href="#">View all chats</a>
+    </div>
+    <div class="admin-prod-overview dash-card">
+        <h2>Product Overview</h2>
+        <a href="{{ url_for('admin_bp.product_overview') }}">View all products</a>
+    </div>
+    <div class="admin-disputes dash-card">
+        <h2>Disputes</h2>
+        <a href="#">View all disputes</a>
+    </div>
+    <div class="admin-new-admin dash-card">
+        <h2>Add New Admin</h2>
+        <a href="#">Add new admin</a>
+    </div>
+</div>
+
+{% endblock  %}

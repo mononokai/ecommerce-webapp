@@ -123,7 +123,6 @@ def login():
 
     else:
         session.clear()
-
         return render_template(
             "auth/login.html",
             form=form,
@@ -214,6 +213,7 @@ def register():
                 role=role,
             )
     else:
+        session.clear()
         return render_template("auth/register.html", form=form)
 
 

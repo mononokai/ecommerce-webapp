@@ -1,5 +1,6 @@
 full_product_select = """
     select user_id, 
+    username,
     email, 
     first_name, 
     last_name, 
