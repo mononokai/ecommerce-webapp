@@ -26,7 +26,7 @@ full_product_select = """
     natural join user 
     natural join color 
     natural join size 
-    natural join role;
+    natural join role
 """
 
 product_query = """

@@ -41,11 +41,10 @@ class ProductForm(FlaskForm):
     submit_edit = SubmitField("Edit Product")
 
 
-@vendor_bp.route('product_overview/')
+@vendor_bp.route('product_overview/', methods=['GET'])
 def product_overview():
     products = conn.execute(text(f"{ fps } where user.user_id = :user_id;"), { 'user_id': session['user_id'] }).fetchall()
-    print(products)
-    
+
     return render_template('vendor/product_overview.html', products=products)
 
 
@@ -125,11 +124,7 @@ def add_product():
 @vendor_bp.route('/edit_product/<int:prod_var_id>', methods=['GET', 'POST'])
 def edit_product(prod_var_id):
     form = ProductForm()
-    pv = conn.execute(text("select * from product_variant where prod_var_id = :prod_var_id;"), { 'prod_var_id': prod_var_id }).fetchone()
-    product = conn.execute(text("select * from product where product_id = :product_id;"), {'product_id': pv.product_id }).fetchone()
-    vp = conn.execute(text("select * from vendor_product where prod_var_id = :prod_var_id;"), { 'prod_var_id': prod_var_id }).fetchone()
-    color = conn.execute(text("select * from color where color_id = :color_id;"), { 'color_id': pv.color_id }).fetchone()
-    size = conn.execute(text("select * from size where size_id = :size_id;"), { 'size_id': pv.size_id }).fetchone()
+    prod = conn.execute(text(f"{ fps } where prod_var_id = :prod_var_id and user_id = :user_id;"), { 'prod_var_id': prod_var_id, 'user_id': session['user_id'] }).fetchone()
 
     if request.method == "POST":
         name = form.name.data
@@ -148,7 +143,7 @@ def edit_product(prod_var_id):
             return redirect(url_for("general_bp.home"))
         else:
             # check if size changed
-            if size_name != size.size_name:
+            if size_name != prod.size_name:
                 # check if size exists in table
                 size_check = conn.execute(text("select * from size where LOWER(size_name) = :size_name;"), { 'size_name': size_name }).fetchone()
                 if size_check is None:
@@ -156,7 +151,7 @@ def edit_product(prod_var_id):
                     conn.execute(text("insert into size (size_name) values (:size_name);"), { 'size_name': size_name })
             
             # check if color changed
-            if color_name != color.color_name:
+            if color_name != prod.color_name:
                 # check if color exists in table
                 color_check = conn.execute(text("select * from color where LOWER(color_name) = :color_name;"), { 'color_name': color_name }).fetchone()
                 if color_check is None:
@@ -164,13 +159,13 @@ def edit_product(prod_var_id):
                     conn.execute(text("insert into color (color_name) values (:color_name);"), { 'color_name': color_name })
             
             # check if product changed
-            if name != product.name:
+            if name != prod.name:
                 # check if product exists in table
                 product_check = conn.execute(text("select * from product where LOWER(name) = :name;"), { 'name': name }).fetchone()
                 if product_check is None:
                     # insert the new product
                     conn.execute(text("insert into product (name, category) values (:name, :category);"), { 'name': name, 'category': category })
-            
+
             # store color, size and product again
             color = conn.execute(text("select * from color where LOWER(color_name) = :color_name;"), { 'color_name': color_name }).fetchone()
             size = conn.execute(text("select * from size where LOWER(size_name) = :size_name;"), { 'size_name': size_name }).fetchone()
@@ -178,37 +173,42 @@ def edit_product(prod_var_id):
 
             # check if product variant exists
             variant_check = conn.execute(text("select * from product_variant where color_id = :color_id and size_id = :size_id and product_id = :product_id;"), { 'color_id': color.color_id, 'size_id': size.size_id, 'product_id': product.product_id }).fetchone()
+
             if variant_check is None:
                 # insert the new product variant
                 conn.execute(text("insert into product_variant (color_id, size_id, product_id) values (:color_id, :size_id, :product_id);"), { 'color_id': color.color_id, 'size_id': size.size_id, 'product_id': product.product_id })
-            
+
             # store product variant again
             variant = conn.execute(text("select * from product_variant where color_id = :color_id and size_id = :size_id and product_id = :product_id;"), { 'color_id': color.color_id, 'size_id': size.size_id, 'product_id': product.product_id }).fetchone()
 
             # check if vendor product exists
-            vendor_product_check = conn.execute(text("select * from vendor_product where prod_var_id = :prod_var_id;"), { 'prod_var_id': variant.prod_var_id }).fetchone()
+            vendor_product_check = conn.execute(text("select * from vendor_product where prod_var_id = :prod_var_id and user_id = :user_id;"), { 'prod_var_id': variant.prod_var_id, 'user_id': session['user_id'] }).fetchone()
+
+            # check if vendor product exists
             if vendor_product_check is None:
-                # update the current vendor product
-                conn.execute(text("update vendor_product set price = :price, inventory = :inventory, img_url = :img_url, description = :description, disc_price = :disc_price, disc_end_date = :disc_end_date where prod_var_id = :prod_var_id;"), { 'price': price, 'inventory': inventory, 'img_url': img_url, 'description': description, 'disc_price': disc_price, 'disc_end_date': disc_end_date, 'prod_var_id': variant.prod_var_id })
+                # insert the new vendor product
+                conn.execute(text("insert into vendor_product (user_id, prod_var_id, price, inventory, img_url, description, disc_price, disc_end_date) values (:user_id, :prod_var_id, :price, :inventory, :img_url, :description, :disc_price, :disc_end_date);"), { 'user_id': session['user_id'], 'prod_var_id': variant.prod_var_id, 'price': price, 'inventory': inventory, 'img_url': img_url, 'description': description, 'disc_price': disc_price, 'disc_end_date': disc_end_date})
+                # delete the old vendor product
+                conn.execute(text("delete from vendor_product where prod_var_id = :prod_var_id and user_id = :user_id;"), { 'prod_var_id': prod.prod_var_id, 'user_id': session['user_id'] })
             else:
                 flash ("Product already exists!", "danger")
                 return redirect(url_for("vendor_bp.product_overview"))
-            
+
             conn.commit()
             flash("Product edited successfully!", "success")
             return redirect(url_for("vendor_bp.product_overview"))           
-        
+
     else:
-        form.name.data = product.name.title()
-        form.category.data = product.category
-        form.color_name.data = color.color_name.title()
-        form.size_name.data = size.size_name.title()
-        form.price.data = vp.price
-        form.inventory.data = vp.inventory
-        form.img_url.data = vp.img_url
-        form.description.data = vp.description
-        form.disc_price.data = vp.disc_price
-        form.disc_end_date.data = vp.disc_end_date
+        form.name.data = prod.name.title()
+        form.category.data = prod.category
+        form.color_name.data = prod.color_name.title()
+        form.size_name.data = prod.size_name.title()
+        form.price.data = prod.price
+        form.inventory.data = prod.inventory
+        form.img_url.data = prod.img_url
+        form.description.data = prod.description
+        form.disc_price.data = prod.disc_price
+        form.disc_end_date.data = prod.disc_end_date
 
         return render_template('vendor/edit_product.html', form=form)
 
