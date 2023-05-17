@@ -79,7 +79,7 @@ def add_product():
 
         if session['role_id'] != 2:
             flash("You are not authorized to add products!", "danger")
-            return redirect(url_for("vendor_bp.product_overview"))
+            return redirect(url_for("general_bp.home"))
         else:
             # product check
             product = conn.execute(text("SELECT * FROM product WHERE name = :name"), { 'name': name }).fetchone()
@@ -113,7 +113,6 @@ def add_product():
             conn.execute(text("INSERT INTO vendor_product (user_id, prod_var_id, price, inventory, img_url, description, disc_price, disc_end_date) VALUES (:user_id, :prod_var_id, :price, :inventory, :img_url, :description, :disc_price, :disc_end_date)"), { 'user_id': session['user_id'], 'prod_var_id': variant.prod_var_id, 'price': price, 'inventory': inventory, 'img_url': img_url, 'description': description, 'disc_price': disc_price, 'disc_end_date': disc_end_date })
 
             conn.commit()
-
             flash("Product added successfully!", "success")
             return redirect(url_for("vendor_bp.product_overview"))
 
