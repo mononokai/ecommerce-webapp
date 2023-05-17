@@ -107,8 +107,12 @@ def login():
                     session["email"] = result.email
                     session["username"] = result.username
                     session["csrf_token"] = form.csrf_token.data
+                    if result.role_id == 1:
+                        session["cart_id"] = conn.execute(text("SELECT cart_id FROM cart WHERE user_id = :user_id;"), {"user_id": result.user_id}).fetchone().cart_id
+
                     flash("You are now logged in", "success")
                     return redirect(url_for("general_bp.home"))
+
                 else:
                     flash("Incorrect password", "error")
                     return redirect(url_for("auth_bp.login"))
@@ -189,12 +193,19 @@ def register():
                     {"username": username}
                 ).fetchone()
 
+                # create a cart for the user
+                if user.role_id == 1:
+                    conn.execute(text("INSERT INTO cart (user_id) VALUES (:user_id);"), {"user_id": user.user_id})
+                    conn.commit()
+
                 # set session variables
                 session["username"] = user.username
                 session["email"] = user.email
                 session["role_id"] = user.role_id
                 session["user_id"] = user.user_id
                 session["csrf_token"] = form.csrf_token.data
+                if user.role_id == 1:
+                    session["cart_id"] = conn.execute(text("SELECT cart_id FROM cart WHERE user_id = :user_id;"), {"user_id": user.user_id}).fetchone().cart_id
 
                 flash("Account created successfully", "success")
                 return redirect(url_for("products_bp.discover"))

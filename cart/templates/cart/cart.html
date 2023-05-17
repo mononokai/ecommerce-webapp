@@ -7,7 +7,33 @@
 {% block content %}
 
 <div class="container">
-    <h1>cart</h1>
+    <h1>Your Cart</h1>
+
+    <div class="cart-container">
+        {% if cart_items == [] %}
+        <p>There's nothing in your cart!</p>
+        {% endif %}
+        {% for item in cart_items %}
+            <div class="cart-item-card">
+                <div class="cart-item-image">
+                    <img src="{{ item.img_url }}" alt="product image" height="150">
+                </div>
+                <div class="cart-item-info">
+                    <h2>Vendor: {{ item.username }}</h2>
+                    <h2>{{ item.name.title() }}</h2>
+                    <p>Price: {{ item.price }}</p>
+                    <p>Color: {{ item.color_name.title() }}</p>
+                    <p>Size: {{ item.size_name.title() }}</p>
+                    <p>Inventory: {{ item.inventory }}</p>
+                    <p>Category: {{ item.category.title() }}</p>
+                    <p>Rating: {{ item.rating }}</p>
+                </div>
+                <div class="cart-item-links">
+                    <a href="{{ url_for('cart_bp.remove', cart_item_id=item.cart_item_id) }}">Remove</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 </div>
 
 {% endblock  %}

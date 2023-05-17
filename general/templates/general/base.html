@@ -23,6 +23,7 @@
                         <a href="{{ url_for('vendor_bp.product_overview') }}">Product Overview</a>
                     {% else %}
                         <a href="{{ url_for('products_bp.discover') }}">Discover</a>
+                        <a href="{{ url_for('cart_bp.cart', cart_id=session['cart_id']) }}">Cart</a>
                         <a href="{{ url_for('user_bp.account_overview', username=session['username']) }}">Account</a>
                 {% endif  %}
             {% endif %}
