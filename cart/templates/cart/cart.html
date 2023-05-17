@@ -29,7 +29,7 @@
                     <p>Rating: {{ item.rating }}</p>
                 </div>
                 <div class="cart-item-links">
-                    <a href="{{ url_for('cart_bp.remove', cart_item_id=item.cart_item_id) }}">Remove</a>
+                    <a href="{{ url_for('cart_bp.remove_item', cart_item_id=item.cart_item_id, cart_id=session['cart_id']) }}">Remove</a>
                 </div>
             </div>
         {% endfor %}

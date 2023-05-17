@@ -104,7 +104,7 @@ CREATE TABLE
     `cart_item` (
         `cart_item_id` int NOT NULL AUTO_INCREMENT,
         `cart_id` int NOT NULL,
-        `prod_var_id` int NOT NULL,
+        `vendor_prod_id` int NOT NULL,
         `quantity` int NOT NULL DEFAULT '1',
         `price` decimal(10, 2) NOT NULL,
         PRIMARY KEY (`cart_item_id`),

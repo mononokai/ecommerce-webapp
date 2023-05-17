@@ -29,10 +29,10 @@ def discover():
 def search():
     return render_template('products/search.html')
 
-@products_bp.route('/product_page/<product_id>/')
-def product(product_id):
+@products_bp.route('/product_page/<vendor_prod_id>/')
+def product_page(vendor_prod_id):
     return render_template('products/product_page.html')
 
-@products_bp.route('/product_page/<product_id>/review/')
-def reviews(product_id):
+@products_bp.route('/product_page/<vendor_prod_id>/review/')
+def reviews(vendor_prod_id):
     return render_template('products/review.html')
