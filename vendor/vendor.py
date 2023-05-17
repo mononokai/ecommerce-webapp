@@ -43,7 +43,7 @@ class ProductForm(FlaskForm):
 
 @vendor_bp.route('product_overview/', methods=['GET'])
 def product_overview():
-    products = conn.execute(text(f"{ fps } where user.user_id = :user_id;"), { 'user_id': session['user_id'] }).fetchall()
+    products = conn.execute(text(f"{ fps } where user.user_id = :user_id and vendor_product.inventory > 0;"), { 'user_id': session['user_id'] }).fetchall()
 
     return render_template('vendor/product_overview.html', products=products)
 

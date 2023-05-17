@@ -48,7 +48,7 @@ def dashboard():
 
 @admin_bp.route('product_overview/')
 def product_overview():
-    products = conn.execute(text(f"{ fps };"), {}).fetchall()
+    products = conn.execute(text(f"{ fps } where vendor_product.inventory > 0;"), {}).fetchall()
 
     return render_template('admin/product_overview.html', products=products)
 
