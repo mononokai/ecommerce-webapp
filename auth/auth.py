@@ -31,7 +31,6 @@ class LoginForm(FlaskForm):
         ],
     )  # Length(min=8)
     # TODO add the length validator back in
-    remember = BooleanField("Remember Me")
     submit = SubmitField("Login")
 
 
@@ -81,7 +80,6 @@ def check_email(email):
 def login():
     email = None
     password = None
-    remember = False
     form = LoginForm()
     form.csrf_token.data = generate_csrf()
 
@@ -95,7 +93,6 @@ def login():
             #  TODO add this back in
             email = form.email.data
             password = form.password.data
-            remember = form.remember.data
             result = conn.execute(
                 text("SELECT * FROM user WHERE email = :email;"), {"email": email}
             ).fetchone()
@@ -132,7 +129,6 @@ def login():
             form=form,
             email=email,
             password=password,
-            remember=remember,
         )
 
 

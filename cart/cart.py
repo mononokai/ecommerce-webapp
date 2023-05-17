@@ -45,11 +45,10 @@ def remove_item(cart_item_id, cart_id):
     flash("Item removed from cart", "success")
     return redirect(url_for('cart_bp.cart', cart_id=session['cart_id']))
 
-@cart_bp.route('/order_confirmation/')
-def order_confirmation():
-    return render_template('cart/order_confirmation.html')
-
-
 @cart_bp.route('/checkout/')
 def checkout():
     return render_template('cart/checkout.html')
+
+@cart_bp.route('/order_confirmation/')
+def order_confirmation():
+    return render_template('cart/order_confirmation.html')
