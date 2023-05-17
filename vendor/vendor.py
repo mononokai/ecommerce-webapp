@@ -213,6 +213,10 @@ def edit_product(prod_var_id):
         return render_template('vendor/edit_product.html', form=form)
 
 
-@vendor_bp.route('delete_product/')
-def delete_product():
-    return render_template('vendor/delete_product.html')
+@vendor_bp.route('delete_product/<int:vendor_prod_id>/', methods=['GET'])
+def delete_product(vendor_prod_id):
+    print(f"--------------- vendor_prod_id: { vendor_prod_id } -------------------")
+    conn.execute(text("delete from vendor_product where vendor_prod_id = :vendor_prod_id;"), { 'vendor_prod_id': vendor_prod_id })
+    conn.commit()
+    flash("Product deleted successfully!", "success")
+    return redirect(url_for("vendor_bp.product_overview"))

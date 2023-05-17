@@ -33,7 +33,7 @@
                 </div>
                 <div class="product-links">
                     <a href="{{ url_for('vendor_bp.edit_product', prod_var_id=product.prod_var_id) }}">Edit</a>
-                    <a href="{{ url_for('vendor_bp.delete_product', prod_var_id=product.prod_var_id) }}">Delete</a>
+                    <a href="{{ url_for('vendor_bp.delete_product', vendor_prod_id=product.vendor_prod_id) }}">Delete</a>
                 </div>
             </div>
         {% endfor %}
