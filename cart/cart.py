@@ -22,9 +22,10 @@ cart_bp = Blueprint("cart_bp", __name__, static_folder="static", template_folder
 @cart_bp.route('/<cart_id>/', methods=['GET', 'POST'])
 def cart(cart_id):
     cart_items = conn.execute(text("SELECT * FROM cart_item natural join vendor_product natural join product_variant natural join color natural join size natural join product where cart_id = :cart_id"), { 'cart_id': cart_id}).fetchall()
+    print(session['cart_id'])
     return render_template('cart/cart.html', cart_items=cart_items)
 
-@cart_bp.route('/<cart_id>/add_item/<vendor_prod_id>/')
+@cart_bp.route('/<cart_id>/add_item/<vendor_prod_id>/', methods=['GET'])
 def add_item(vendor_prod_id, cart_id):
     # check if item is already in cart
     result = conn.execute(text("SELECT * FROM cart_item WHERE vendor_prod_id = :vendor_prod_id AND cart_id = :cart_id"), {'vendor_prod_id': vendor_prod_id, 'cart_id': cart_id}).fetchone()
@@ -37,6 +38,12 @@ def add_item(vendor_prod_id, cart_id):
         conn.commit()
         flash("Item added to cart", "success")
         return redirect(url_for('products_bp.discover'))
+    
+@cart_bp.route('/<cart_id>/clear_cart/', methods=['GET'])
+def clear_cart(cart_id):
+    conn.execute(text("DELETE FROM cart_item WHERE cart_id = :cart_id"), {'cart_id': cart_id})
+    conn.commit()
+    return redirect(url_for('cart_bp.cart', cart_id=session['cart_id']))
 
 @cart_bp.route('/<cart_id>/remove_item/<cart_item_id>/')
 def remove_item(cart_item_id, cart_id):

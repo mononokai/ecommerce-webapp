@@ -34,10 +34,18 @@
             </div>
         {% endfor %}
     </div>
-    <div class="cart-costs">
-        <p>Subtotal: {{ subtotal }}</p>
-        <p>Tax: {{ tax }}</p>
-        <p>Total: {{ total }}</p>
+
+    <div class="cart-lower-container">
+        <div class="cart-costs">
+            <p>Subtotal: {{ subtotal }}</p>
+            <p>Tax: {{ tax }}</p>
+            <p>Total: {{ total }}</p>
+        </div>
+    
+        <div class="cart-buttons">
+            <a href="{{ url_for('cart_bp.checkout', cart_id=session['cart_id']) }}">Checkout</a>
+            <a href="{{ url_for('cart_bp.clear_cart', cart_id=session['cart_id']) }}">Clear Cart</a>
+        </div>
     </div>
 </div>
 
