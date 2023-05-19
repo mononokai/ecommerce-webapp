@@ -36,12 +36,14 @@ class CardForm(FlaskForm):
 def cart(cart_id):
     cart_items = conn.execute(text("SELECT * FROM cart_item natural join vendor_product natural join product_variant natural join color natural join size natural join product where cart_id = :cart_id"), { 'cart_id': cart_id}).fetchall()
     # get the sum of the cart
-    subtotal = float(conn.execute(text("SELECT SUM(price) FROM cart_item WHERE cart_id = :cart_id"), {'cart_id': cart_id}).fetchone()[0])
-    tax = format(round(subtotal * 0.06, 2), '.2f')
-    total = format(subtotal + float(tax), '.2f')
+    if cart_items:
+        subtotal = float(conn.execute(text("SELECT SUM(price) FROM cart_item WHERE cart_id = :cart_id"), {'cart_id': cart_id}).fetchone()[0])
+        tax = format(round(subtotal * 0.06, 2), '.2f')
+        total = format(subtotal + float(tax), '.2f')
+        return render_template('cart/cart.html', cart_items=cart_items, subtotal=subtotal, tax=tax, total=total)
 
-    print(session['cart_id'])
-    return render_template('cart/cart.html', cart_items=cart_items, subtotal=subtotal, tax=tax, total=total)
+    else:
+        return render_template('cart/cart.html', cart_items=cart_items)
 
 
 # ------------------------- Add Item ------------------------- #
@@ -113,9 +115,14 @@ def checkout():
                 # store the invoice items
                 conn.execute(text("INSERT INTO invoice_item (order_id, product_id, vendor_id, prod_var_id, product_name, quantity, price) VALUES (:order_id, :product_id, :vendor_id, :prod_var_id, :product_name, :quantity, :price)"), {'order_id': order_id, 'product_id': full_product.product_id, 'vendor_id': full_product.user_id, 'prod_var_id': full_product.prod_var_id, 'product_name': full_product.name, 'quantity': item.quantity, 'price': item.quantity})
 
+                # update quantity in db
+                conn.execute (text("update vendor_product set inventory = inventory - :quantity where vendor_prod_id = :vendor_prod_id"), {'quantity': item.quantity, 'vendor_prod_id': item.vendor_prod_id})
+
             # clear the cart
             conn.execute(text("DELETE FROM cart_item WHERE cart_id = :cart_id"), {'cart_id': session['cart_id']})
-                
+            
+            
+
             conn.commit()
             flash("Order placed successfully!", "success")
             return redirect(url_for('user_bp.order_history'))

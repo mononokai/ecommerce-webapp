@@ -33,6 +33,6 @@ def search():
 def product_page(vendor_prod_id):
     return render_template('products/product_page.html')
 
-@products_bp.route('/product_page/<vendor_prod_id>/review/')
-def reviews(vendor_prod_id):
-    return render_template('products/review.html')
+@products_bp.route('/product_page/<prod_var_id>/review/')
+def reviews(prod_var_id):
+    return render_template('products/review.html', prod_var_id=prod_var_id)

@@ -115,6 +115,22 @@ CREATE TABLE
     );
 
 CREATE TABLE
+    `invoice` (
+        `order_id` int NOT NULL AUTO_INCREMENT,
+        `user_id` int NOT NULL,
+        `order_date` date NOT NULL DEFAULT (curdate()),
+        `total_price` decimal(10, 2) NOT NULL DEFAULT '0.00',
+        `order_status` enum(
+            'pending',
+            'confirmed',
+            'shipped'
+        ) NOT NULL DEFAULT 'pending',
+        PRIMARY KEY (`order_id`),
+        KEY `orders_user_fk` (`user_id`),
+        CONSTRAINT `orders_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
+    );
+
+CREATE TABLE
     `invoice_item` (
         `invoice_item_id` int NOT NULL AUTO_INCREMENT,
         `order_id` int NOT NULL,
@@ -133,20 +149,6 @@ CREATE TABLE
         CONSTRAINT `invoice_item_prod_id` FOREIGN KEY (`product_id`) REFERENCES `product` (`product_id`),
         CONSTRAINT `invoice_item_prod_var_fk` FOREIGN KEY (`prod_var_id`) REFERENCES `product_variant` (`prod_var_id`),
         CONSTRAINT `invoice_item_vendor_id_fk` FOREIGN KEY (`vendor_id`) REFERENCES `user` (`user_id`)
-    );
-
-CREATE TABLE
-    `invoice_item` (
-        `invoice_item_id` int NOT NULL AUTO_INCREMENT,
-        `order_id` int NOT NULL,
-        `prod_var_id` int NOT NULL,
-        `quantity` int NOT NULL,
-        `price` decimal(10, 2) NOT NULL,
-        PRIMARY KEY (`invoice_item_id`),
-        KEY `invoice_item_order_fk` (`order_id`),
-        KEY `invoice_item_prod_var_fk` (`prod_var_id`),
-        CONSTRAINT `invoice_item_order_fk` FOREIGN KEY (`order_id`) REFERENCES `invoice` (`order_id`),
-        CONSTRAINT `invoice_item_prod_var_fk` FOREIGN KEY (`prod_var_id`) REFERENCES `product_variant` (`prod_var_id`)
     );
 
 CREATE TABLE
@@ -226,35 +228,23 @@ CREATE TABLE
 INSERT INTO role (role_name)
 VALUES ('customer'), ('vendor'), ('admin');
 
+
 -- all select queries
-
 select * from role;
-
 select * from user;
-
 select * from product;
-
 select * from color;
-
 select * from size;
-
 select * from product_variant;
-
 select * from vendor_product;
-
 select * from cart;
-
 select * from cart_item;
-
 select * from invoice;
-
 select * from invoice_item;
-
 select * from chat;
-
 select * from message;
-
 select * from dispute;
+
 
 -- filler
 
@@ -338,6 +328,8 @@ VALUES (
         'password'
     );
 
+
+
 INSERT INTO
     `ecommerce_webapp`.`product` (
         `product_id`,
@@ -370,6 +362,8 @@ VALUES (
         'notebook'
     );
 
+
+
 INSERT INTO
     `ecommerce_webapp`.`color` (`color_id`, `color_name`)
 VALUES ('1', 'black');
@@ -381,6 +375,8 @@ VALUES ('2', 'white');
 INSERT INTO
     `ecommerce_webapp`.`color` (`color_id`, `color_name`)
 VALUES ('3', 'assorted');
+
+
 
 INSERT INTO
     `ecommerce_webapp`.`size` (`size_id`, `size_name`)
@@ -405,6 +401,8 @@ VALUES ('5', 'A4');
 INSERT INTO
     `ecommerce_webapp`.`size` (`size_id`, `size_name`)
 VALUES ('6', 'B5');
+
+
 
 INSERT INTO
     `ecommerce_webapp`.`product_variant` (
@@ -450,6 +448,8 @@ INSERT INTO
         `size_id`
     )
 VALUES ('5', '2', '2', '6');
+
+
 
 INSERT INTO
     `ecommerce_webapp`.`vendor_product` (
@@ -578,3 +578,4 @@ VALUES (
         'https://cdn.pixabay.com/photo/2016/02/11/20/21/notebook-1194456_960_720.jpg',
         'An unlined notebook with 90 pages'
     );
+

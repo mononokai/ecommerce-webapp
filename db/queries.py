@@ -30,6 +30,10 @@ full_product_select = """
     natural join role
 """
 
-product_query = """
-
+invoice_query = """
+    select * from invoice 
+    natural join invoice_item
+    natural join product
+    natural join product_variant
+    natural join user
 """
