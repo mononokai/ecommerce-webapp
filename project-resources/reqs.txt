@@ -1,0 +1,109 @@
+- Account Registration:
+	- Name
+	- Email
+	- Username
+	- Password
+- Login:
+	- Email
+	- Password
+- User Types:
+	- Admin
+	- Vendor
+	- Customer
+- Add Product:
+	- Vendors can add new products:
+		- Title
+		- Description
+		- Image
+		- Category
+		- Colors
+		- Sizes
+		- Quantity Available
+		- Price
+	- Admins can add products for specified vendors
+- Edit Product:
+	- Vendors can edit products they have added
+	- Admins can edit all products
+- Delete Product:
+	- Vendors can delete products they have added
+	- Admins can delete all products
+- Discounts:
+	- Old price and new price must be shown
+	- Some discounts have time limits
+	- Customers will see the time limits if they exist
+- Product Page:
+	- Customers, Vendors, and Admins can all see any particular product
+	- Products can be searched for:
+		- Name
+		- Partial description match
+		- Vendor
+	- Products can be filtered:
+		- Category
+		- Color  
+		- Size
+		- Availability
+- Cart:
+	- Customers can add any product to their cart
+	- Customers can add products of different sizes and colors
+	- Cart items must be stored
+- Order:
+	- Customer checks out, order is placed
+	- Each order has and order number
+	- Each order has an item list 
+	- Total price is calculated
+	- Cart is cleared when the order is placed
+- Order Confirmation:
+	- Vendor must confirm all orders for their products
+	- Order status is then updated:
+		- Pending
+		- Confirmed
+		- Shipped
+- Review:
+	- Customer can write a review for purchased product:
+		- Rating
+		- Description
+	- The review could be displayed:
+		- On the product page with reviewer's name
+		- On a separate page
+	- Can be filtered by ratings
+- Returns:
+	- Customer can file a complaint about a product they have received:
+		- Title
+		- Description
+		- Request:
+    		- Return
+    		- Refund
+	- Admin will review the request and approve or reject it
+	- Request status will be updated:
+		- Pending
+		- Confirmed OR rejected
+		- Processing
+		- Complete
+- Chat:
+	- Customer can chat with any vendor
+	- Contains only text
+	- For returns/refunds, customer can chat with admin
+- Account page:
+	- Customers can view all of their own personal details
+- Orders page:
+	- Customers can view all of their placed orders
+- Received orders page:
+	- Vendors can see all of their received orders
+
+
+Specifications:
+- Make a complete UI covering all features
+- Make a complete backend covering all features
+- UI is up for our interpretation
+- Design:
+	- Attractive landing page
+	- Strong call to action
+	- Navbar with links like homepage, register, login, my account, cart, etc
+	- Landing page should have buttons for some product categories
+	- Attractive footer
+	- Header and footer should be same on all pages preferably
+	- Color scheme
+	- CSS special effects - animation/hover/transitions/scale
+- Security:
+	- Authentication/authorization
+	- Hashing/salt/etc

@@ -1,0 +1,66 @@
+<!-- This is the individual chat page -->
+{% extends 'general/base.html' %}
+
+
+{% block title %} - Note Worthy{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+    <div class="chat-box">
+        {% if chat.customer_id == session['user_id'] %}
+            <h1>Chat with {{ rep.first_name.title() }}</h1>
+
+            <div class="chat-messages">
+                {% for message in messages %}
+
+                    {% if message.sender_id == session['user_id'] %}
+                        <div class="chat-home">
+                            <p class="chat-message-sender">You</p>
+                            <p class="chat-message-content">{{ message.msg_text }}</p>
+                        </div>
+                    {% else %}
+                        <div class="chat-away">
+                            <p class="chat-message-sender">{{ rep.first_name.title() }}</p>
+                            <p class="chat-message-content">{{ message.msg_text }}</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <h1>Chat with {{ customer.first_name.title() }}</h1>
+
+            <div class="chat-messages">
+                {% for message in messages %}
+
+                    {% if message.sender_id == session['user_id'] %}
+                        <div class="chat-home">
+                            <p class="chat-message-sender">You</p>
+                            <p class="chat-message-content">{{ message.msg_text }}</p>
+                        </div>
+                    {% else %}
+                        <div class="chat-away">
+                            <p class="chat-message-sender">{{ customer.first_name.title() }}</p>
+                            <p class="chat-message-content">{{ message.msg_text }}</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+
+        <div class="chat-input">
+            <form action="{{ url_for('user_bp.chat_view', chat_id=chat_id) }}" method="POST">
+                {{ form.hidden_tag() }}
+
+                {{ form.message.label }}
+                {{ form.message(placeholder='Type your message here') }}
+
+                {{ form.submit() }}
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock  %}

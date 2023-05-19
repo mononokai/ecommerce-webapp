@@ -1,0 +1,54 @@
+{% extends 'general/base.html' %}
+
+
+{% block title %}Edit Product (Vendor) - Note Worthy{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+    <h1>Edit Product</h1>
+    
+    <form action="#" method="post">
+        {{ form.hidden_tag }}
+
+        {{ form.name.label }}
+        {{ form.name }}
+        
+        {{ form.category.label }}
+        {{ form.category }}
+        
+        {{ form.color_name.label }}
+        {{ form.color_name }}
+        
+        {{ form.size_name.label }}
+        {{ form.size_name }}
+        
+        {{ form.price.label }}
+        {{ form.price }}
+        
+        {{ form.inventory.label }}
+        {{ form.inventory }}
+        
+        {{ form.img_url.label }}
+        {{ form.img_url }}
+        
+        {{ form.description.label }}
+        {{ form.description(rows=10) }}
+        
+        {{ form.discount.label }}
+        {{ form.discount }}
+
+        <div id="discount-fields" hidden>
+            {{ form.disc_price.label }}
+            {{ form.disc_price }}
+    
+            {{ form.disc_end_date.label }}
+            {{ form.disc_end_date }}
+        </div>
+
+        {{ form.submit_edit }}
+    </form>
+</div>
+
+{% endblock  %}

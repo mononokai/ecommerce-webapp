@@ -1,0 +1,44 @@
+{% extends 'general/base.html' %}
+
+
+{% block title %}Product Overview (Admin) - Note Worthy{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+    <h1>Product Overview</h1>
+    
+    <div class="product-overview-links">
+        <a href="{{ url_for('admin_bp.add_product') }}">add product</a>
+    </div>
+
+    <div class="product-container">
+        {% if products == [] %}
+        <p>No products to display</p>
+        {% endif %}
+        {% for product in products %}
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="{{ product.img_url }}" alt="product image" width="200">
+                </div>
+                <div class="product-info">
+                    <h2>Vendor: {{ product.username }}</h2>
+                    <h2>{{ product.name.title() }}</h2>
+                    <p>Price: {{ product.price }}</p>
+                    <p>Color: {{ product.color_name.title() }}</p>
+                    <p>Size: {{ product.size_name.title() }}</p>
+                    <p>Inventory: {{ product.inventory }}</p>
+                    <p>Category: {{ product.category.title() }}</p>
+                    <p>Rating: {{ product.rating }}</p>
+                </div>
+                <div class="product-links">
+                    <a href="{{ url_for('admin_bp.edit_product', vendor_prod_id=product.vendor_prod_id) }}">Edit</a>
+                    <a href="{{ url_for('admin_bp.delete_product', vendor_prod_id=product.vendor_prod_id) }}">Delete</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock  %}

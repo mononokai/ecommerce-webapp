@@ -1,0 +1,25 @@
+{% extends 'general/base.html' %}
+
+
+{% block title %}Login - Note Worthy{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+    <h1 class='section-heading'>Login</h1>
+
+    <form action="#" method="post">
+        {{ form.hidden_tag() }}
+
+        {{ form.email.label }}
+        {{ form.email() }}
+
+        {{ form.password.label }}
+        {{ form.password() }}
+
+        {{ form.submit() }}
+    </form>
+</div>
+
+{% endblock  %}

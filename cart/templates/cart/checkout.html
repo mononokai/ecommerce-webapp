@@ -1,0 +1,63 @@
+{% extends 'general/base.html' %}
+
+
+{% block title %}Checkout - Note Worthy{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+    <h1>Checkout</h1>
+
+    <div class="checkout-items item-list">
+        {% if cart_items == [] %}
+            <p>There's nothing in your cart!</p>
+        {% endif %}
+        {% for item in cart_items %}
+            <div class="cart-item-card">
+                <div class="cart-item-image">
+                    <img src="{{ item.img_url }}" alt="product image" height="100">
+                </div>
+                <div class="cart-item-info">
+                    <h2>{{ item.name.title() }}</h2>
+                    <p>Color: {{ item.color_name.title() }}</p>
+                    <p>Size: {{ item.size_name.title() }}</p>
+                    <p>Price: ${{ item.price }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="checkout-lower-container">
+        <div class="checkout-costs">
+            <p>Subtotal: ${{ subtotal }}</p>
+            <p>Tax: ${{ tax }}</p>
+            <p>Total: ${{ total }}</p>
+        </div>
+    
+        <div class="checkout form">
+            <form action="#" method="post">
+                {{ form.hidden_tag() }}
+    
+                {{ form.card_name.label }}
+                {{ form.card_name(placeholder='Name') }}
+    
+                {{ form.card_number.label }}
+                {{ form.card_number(placeholder='16 Digit Card Number') }}
+    
+                {{ form.card_expiration.label }}
+                {{ form.card_expiration(placeholder='MMYY') }}
+    
+                {{ form.card_cvv.label }}
+                {{ form.card_cvv(placeholder='123') }}
+
+                {{ form.zipcode.label }}
+                {{ form.zipcode(placeholder='Zipcode') }}
+    
+                {{ form.submit() }}
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock  %}

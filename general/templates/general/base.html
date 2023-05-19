@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>{% block title %} {% endblock %}</title>
+</head>
+<body>
+<nav>
+    <div class="nav-container">
+        <div class="nav-logo">
+            <a href="{{ url_for('general_bp.home') }}">Note Worthy</a>
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('general_bp.home') }}">Home</a>
+            {% if session %}
+                {% if session['role_id'] == 3 %}
+                    <a href="{{ url_for('admin_bp.dashboard') }}">Admin Dashboard</a>
+                {% else %}
+                    {% if session['role_id'] == 2 %}
+                        <a href="{{ url_for('vendor_bp.product_overview') }}">Product Overview</a>
+                    {% else %}
+                        <a href="{{ url_for('products_bp.discover') }}">Discover</a>
+                        <a href="{{ url_for('cart_bp.cart', cart_id=session['cart_id']) }}">Cart</a>
+                        <a href="{{ url_for('user_bp.account_overview', username=session['username']) }}">Account</a>
+                {% endif  %}
+            {% endif %}
+            <a href="{{ url_for('auth_bp.logout') }}">Logout</a>
+            {% else %}
+            <a href="{{ url_for('auth_bp.login') }}">Login</a>
+            <a href="{{ url_for('auth_bp.register') }}">Register</a>
+            {% endif %}
+        </div>
+    </div>
+</nav> 
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for msg in messages %}
+            <p class="flash-msg">{{ msg }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<main>
+    <div class="container">
+        {% block content%}
+        
+        {% endblock %}
+    </div>
+</main>
+
+<footer>
+    <div class="footer-container">
+        <div class="footer-links">
+            <a href="{{ url_for('general_bp.home') }}">Home</a>
+            {% if session %}
+                {% if session['role_id'] == 3 %}
+                    <a href="{{ url_for('admin_bp.dashboard') }}">Admin Dashboard</a>
+                {% else %}
+                    {% if session['role_id'] == 2 %}
+                        <a href="{{ url_for('vendor_bp.product_overview') }}">Product Overview</a>
+                    {% else %}
+                        <a href="{{ url_for('products_bp.discover') }}">Discover</a>
+                        <a href="{{ url_for('cart_bp.cart', cart_id=session['cart_id']) }}">Cart</a>
+                        <a href="{{ url_for('user_bp.account_overview', username=session['username']) }}">Account</a>
+                {% endif  %}
+            {% endif %}
+            <a href="{{ url_for('auth_bp.logout') }}">Logout</a>
+            {% else %}
+            <a href="{{ url_for('auth_bp.login') }}">Login</a>
+            <a href="{{ url_for('auth_bp.register') }}">Register</a>
+            {% endif %}
+        </div>
+    </div>
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="{{ url_for('static', filename="app.js") }}"></script>
+<script src="{{ url_for('static', filename="jquery.js") }}"></script>
+</body>
+</html>

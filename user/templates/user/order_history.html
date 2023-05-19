@@ -1,0 +1,32 @@
+{% extends 'general/base.html' %}
+
+
+{% block title %}Order History - Note Worthy{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+    <h1>Order History</h1>
+
+    <div class="invoice-container">
+        {% if invoices == [] %}
+            <p>You haven't placed any orders!</p>
+        {% endif %}
+        {% for invoice in invoices %}
+            <div class="invoice-card">
+                <div class="invoice-info">
+                    <p>Order ID: {{ invoice.order_id }}</p>
+                    <p>Order Date: {{ invoice.order_date }}</p>
+                    <p>Order Total: ${{ invoice.total_price }}</p>
+                    <p>Order Status: {{ invoice.order_status.title() }}<p>
+                </div>
+                <div class="invoice-links">
+                    <a href="{{ url_for('user_bp.chat_view', chat_id=admin_id) }}">Any issues? Chat with a rep</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

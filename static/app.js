@@ -1,6 +1,6 @@
-const discountSelector= document.querySelector('#discount') as HTMLSelectElement;
-const discountFields = document.querySelector('#discount-fields') as HTMLDivElement;
-
+"use strict";
+const discountSelector = document.querySelector('#discount');
+const discountFields = document.querySelector('#discount-fields');
 discountSelector.addEventListener('change', () => {
     if (discountSelector.value == 'yes') {
         discountFields.removeAttribute('hidden');
@@ -9,3 +9,4 @@ discountSelector.addEventListener('change', () => {
         discountFields.setAttribute('hidden', '');
     }
 });
+//# sourceMappingURL=app.js.map

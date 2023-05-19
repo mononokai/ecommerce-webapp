@@ -1,0 +1,41 @@
+{% extends 'general/base.html' %}
+
+
+{% block title %}Register - Note Worthy{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+    <h1 class='section-heading'>Register</h1>
+    
+    <form action="#" method="post">
+        {{ form.hidden_tag() }}
+
+        {{ form.username.label }}
+        {{ form.username() }}
+        
+        {{ form.email.label }}
+        {{ form.email() }}
+        
+        {{ form.first_name.label }}
+        {{ form.first_name() }}
+        
+        {{ form.last_name.label }}
+        {{ form.last_name() }}
+
+        {{ form.password.label }}
+        {{ form.password() }}
+
+        {{ form.confirm_password.label }}
+        {{ form.confirm_password() }}
+
+        {{ form.role.label }}
+        {{ form.role() }}
+
+        {{ form.submit() }}
+
+    </form>
+</div>
+
+{% endblock  %}
