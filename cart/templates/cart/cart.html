@@ -9,24 +9,20 @@
 <div class="container">
     <h1>Your Cart</h1>
 
-    <div class="cart-container">
+    <div class="cart-container item-list">
         {% if cart_items == [] %}
         <p>There's nothing in your cart!</p>
         {% endif %}
         {% for item in cart_items %}
             <div class="cart-item-card">
                 <div class="cart-item-image">
-                    <img src="{{ item.img_url }}" alt="product image" height="150">
+                    <img src="{{ item.img_url }}" alt="product image" height="100">
                 </div>
                 <div class="cart-item-info">
-                    <h2>Vendor: {{ item.username }}</h2>
                     <h2>{{ item.name.title() }}</h2>
-                    <p>Price: {{ item.price }}</p>
                     <p>Color: {{ item.color_name.title() }}</p>
                     <p>Size: {{ item.size_name.title() }}</p>
-                    <p>Inventory: {{ item.inventory }}</p>
-                    <p>Category: {{ item.category.title() }}</p>
-                    <p>Rating: {{ item.rating }}</p>
+                    <p>Price: ${{ item.price }}</p>
                 </div>
                 <div class="cart-item-links">
                     <a href="{{ url_for('cart_bp.remove_item', cart_item_id=item.cart_item_id, cart_id=session['cart_id']) }}">Remove</a>
@@ -37,13 +33,16 @@
 
     <div class="cart-lower-container">
         <div class="cart-costs">
-            <p>Subtotal: {{ subtotal }}</p>
-            <p>Tax: {{ tax }}</p>
-            <p>Total: {{ total }}</p>
+            <p>Subtotal: ${{ subtotal }}</p>
+            <p>Tax: ${{ tax }}</p>
+            <p>Total: ${{ total }}</p>
         </div>
     
         <div class="cart-buttons">
-            <a href="{{ url_for('cart_bp.checkout', cart_id=session['cart_id']) }}">Checkout</a>
+            <form action="{{ url_for('cart_bp.checkout') }}" method="POST">
+                <input type="hidden" name="cart_id" value="{{ session['cart_id'] }}">
+                <button type="submit">Checkout</button>
+            </form>
             <a href="{{ url_for('cart_bp.clear_cart', cart_id=session['cart_id']) }}">Clear Cart</a>
         </div>
     </div>
